@@ -1,5 +1,7 @@
 package org.example.dpnrepair;
 
+import org.example.dpnrepair.parser.DPNParser;
+import org.example.dpnrepair.parser.DPNParserException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -12,14 +14,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException {
-
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document doc = builder.parse(new File("src/main/resources/figure1-dpn.pnml"));
-        doc.getDocumentElement().normalize();
-        Node node = doc.getDocumentElement();
-//        for(int i = 0; i < node.; i++){
-//            System.out.println(nodeList.item(0).);
-//        }
+    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, DPNParserException {
+        DPNParser parser = new DPNParser("src/main/resources/figure1-dpn.pnml");
+        parser.parse();
     }
 }
