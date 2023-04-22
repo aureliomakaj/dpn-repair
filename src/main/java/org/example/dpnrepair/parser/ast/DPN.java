@@ -13,7 +13,7 @@ public class DPN {
     private List<Arc> arcs = new ArrayList<>();
     private Marking initialMarking;
     private Marking finalMarking;
-    private Map<String, Integer> variables = new HashMap<>();
+    private List<Variable> variables = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -41,10 +41,6 @@ public class DPN {
         }
     }
 
-    public void setPlaces(Map<String, Place> places) {
-        this.places = places;
-    }
-
     public Map<String, Transition> getTransitions() {
         return transitions;
     }
@@ -55,16 +51,14 @@ public class DPN {
         }
     }
 
-    public void setTransitions(Map<String, Transition> transitions) {
-        this.transitions = transitions;
-    }
-
     public List<Arc> getArcs() {
         return arcs;
     }
 
-    public void setArcs(List<Arc> arcs) {
-        this.arcs = arcs;
+    public void addArc(Arc arc) {
+        if(arc != null){
+            this.arcs.add(arc);
+        }
     }
 
     public Marking getInitialMarking() {
@@ -83,11 +77,11 @@ public class DPN {
         this.finalMarking = finalMarking;
     }
 
-    public Map<String, Integer> getVariables() {
+    public List<Variable> getVariables() {
         return variables;
     }
 
-    public void setVariables(Map<String, Integer> variables) {
+    public void setVariables(List<Variable> variables) {
         this.variables = variables;
     }
 }

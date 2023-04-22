@@ -17,5 +17,6 @@ public class Main {
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, DPNParserException {
         DPNParser parser = new DPNParser("src/main/resources/figure1-dpn.pnml");
         parser.parse();
+        System.out.println("Finished");
     }
 }

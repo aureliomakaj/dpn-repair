@@ -14,6 +14,7 @@ public class Tags {
     static final String FILL = "fill";
     static final String WRITE_VAR = "writeVariable";
     static final String READ_VAR = "readVariable";
+    static final String ARC = "arc";
     static final String ARC_TYPE = "arctype";
     static final String FINAL_MARKINGS = "finalmarkings";
     static final String INITIAL_MARKINGS = "initialmarkings";
