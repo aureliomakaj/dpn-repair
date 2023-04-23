@@ -2,7 +2,6 @@ package org.example.dpnrepair.parser;
 
 import org.example.dpnrepair.parser.ast.*;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -12,11 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.security.Guard;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +19,7 @@ public class DPNParser {
     private Document xml;
     private DPN dpn;
     private GuardToConstraintConverter guardConverter = new GuardToConstraintConverter();
-    private static final List<String> ALLOWED_TAGS = Arrays.asList(Tags.PNML, Tags.NET, Tags.NAME, Tags.TEXT, Tags.PAGE, Tags.PLACE, Tags.GRAPHICS, Tags.POSITION, Tags.DIMENSION, Tags.TRANSITION, Tags.FILL, Tags.WRITE_VAR, Tags.READ_VAR, Tags.ARC, Tags.ARC_TYPE, Tags.FINAL_MARKINGS, Tags.INITIAL_MARKINGS, Tags.MARKINGS, Tags.VARIABLES, Tags.VARIABLE);
+    private static final List<String> ALLOWED_TAGS = Arrays.asList(Tags.PNML, Tags.NET, Tags.NAME, Tags.TEXT, Tags.PAGE, Tags.PLACE, Tags.GRAPHICS, Tags.POSITION, Tags.DIMENSION, Tags.TRANSITION, Tags.FILL, Tags.WRITE_VAR, Tags.READ_VAR, Tags.ARC, Tags.ARC_TYPE, Tags.FINAL_MARKINGS, Tags.INITIAL_MARKINGS, Tags.MARKING, Tags.VARIABLES, Tags.VARIABLE);
 
 
     public DPNParser(String file) throws ParserConfigurationException, IOException, SAXException {
@@ -65,10 +60,17 @@ public class DPNParser {
                     dpn.setName(name);
                 } else if (Tags.PAGE.equals(n.getNodeName())) {
                     parsePage(n);
+                } else if (Tags.INITIAL_MARKINGS.equals(n.getNodeName())) {
+                    dpn.setInitialMarking(parseMarking(n));
+                } else if (Tags.FINAL_MARKINGS.equals(n.getNodeName())) {
+                    dpn.setFinalMarking(parseMarking(n));
+                } else if (Tags.VARIABLES.equals(n.getNodeName())) {
+                    dpn.setVariables(parseVariables(n));
                 }
             }
         }
     }
+
 
     private void parsePage(Node page) throws DPNParserException {
         for (int i = 0; i < page.getChildNodes().getLength(); i++) {
@@ -80,7 +82,7 @@ public class DPNParser {
                 } else if (Tags.TRANSITION.equals(n.getNodeName())) {
                     Transition t = parseTransition(n);
                     dpn.addTransition(t);
-                } else if (Tags.ARC.equals(n.getNodeName())){
+                } else if (Tags.ARC.equals(n.getNodeName())) {
                     Arc a = parseArc(n);
                     dpn.addArc(a);
                 }
@@ -233,22 +235,22 @@ public class DPNParser {
         for (int i = 0; i < arc.getChildNodes().getLength(); i++) {
             Node n = arc.getChildNodes().item(i);
             if (isSupported(n)) {
-                if(isName(n)){
+                if (isName(n)) {
                     a.setName(parseName(n));
-                } else if (Tags.ARC_TYPE.equals(n.getNodeName())){
+                } else if (Tags.ARC_TYPE.equals(n.getNodeName())) {
                     a.setArctype(n.getTextContent().trim());
                 }
             }
         }
 
         Node sourceNode = arc.getAttributes().getNamedItem(Attributes.SOURCE);
-        if(sourceNode == null){
+        if (sourceNode == null) {
             throw new DPNParserException("\"" + Tags.ARC + "\" tag must have a \"" + Attributes.SOURCE + "\" attribute");
         }
         a.setSource(sourceNode.getTextContent());
 
         Node targetNode = arc.getAttributes().getNamedItem(Attributes.TARGET);
-        if(targetNode == null){
+        if (targetNode == null) {
             throw new DPNParserException("\"" + Tags.ARC + "\" tag must have a \"" + Attributes.TARGET + "\" attribute");
         }
         a.setTarget(targetNode.getTextContent());
@@ -256,14 +258,80 @@ public class DPNParser {
         return a;
     }
 
-    private String parseName(Node name) {
+    private Marking parseMarking(Node initMarking) throws DPNParserException {
+        Marking m = new Marking();
+        for (int i = 0; i < initMarking.getChildNodes().getLength(); i++) {
+            Node n = initMarking.getChildNodes().item(i);
+            if (isSupported(n) && Tags.MARKING.equals(n.getNodeName())) {
+                for (int j = 0; j < n.getChildNodes().getLength(); j++) {
+                    Node sub_node = n.getChildNodes().item(j);
+                    if (isSupported(n) && Tags.PLACE.equals(sub_node.getNodeName())) {
+                        Node refPlace = sub_node.getAttributes().getNamedItem(Attributes.ID_REF);
+                        if (refPlace == null) {
+                            throw new DPNParserException("\"" + Tags.PLACE + "\" attribute inside \"" + Tags.MARKING +
+                                    "\" must have an \"" + Attributes.ID_REF + "\" attribute");
+                        }
+                        m.addPlaceIds(refPlace.getTextContent());
+                    }
+                }
+            }
+        }
+        return m;
+    }
+
+    private Map<String, Variable> parseVariables(Node variables) throws DPNParserException {
+        Map<String, Variable> vars = new HashMap<>();
+        for (int i = 0; i < variables.getChildNodes().getLength(); i++) {
+            Node n = variables.getChildNodes().item(i);
+            if (isSupported(n) && Tags.VARIABLE.equals(n.getNodeName())) {
+                Variable v = parseVariable(n);
+                vars.put(v.getName(), v);
+            }
+        }
+        return vars;
+    }
+
+    private Variable parseVariable(Node variable) throws DPNParserException {
+        Variable v = new Variable();
+        for (int i = 0; i < variable.getChildNodes().getLength(); i++) {
+            Node n = variable.getChildNodes().item(i);
+            if (isSupported(n)) {
+                if (isName(n)) {
+                    v.setName(parseName(n));
+                } else if (isGraphics(n)) {
+                    v.setGraphics(parseGraphics(n));
+                }
+            }
+        }
+
+        Node minValueNode = variable.getAttributes().getNamedItem(Attributes.MIN_VALUE);
+        long minValue = minValueNode == null ? Long.MIN_VALUE : Long.parseLong(minValueNode.getTextContent().trim());
+        v.setMinValue(minValue);
+
+        Node maxValueNode = variable.getAttributes().getNamedItem(Attributes.MAX_VALUE);
+        long maxValue = maxValueNode == null ? Long.MAX_VALUE : Long.parseLong(maxValueNode.getTextContent().trim());
+        if(maxValue < minValue){
+            throw new DPNParserException(Attributes.MAX_VALUE + " lower than " + Attributes.MIN_VALUE + " detected for variable " + v.getName());
+        }
+        v.setMaxValue(maxValue);
+
+        Node initialValueNode = variable.getAttributes().getNamedItem(Attributes.INITIAL_VALUE);
+        long initialValue = initialValueNode == null ? 0L : Long.parseLong(initialValueNode.getTextContent().trim());
+        if(initialValue < minValue || initialValue > maxValue){
+            throw new DPNParserException(Attributes.INITIAL_VALUE + " not in range [" + minValue + ", " + maxValue + "] variable " + v.getName());
+        }
+        v.setInitialValue(initialValue);
+        return v;
+    }
+
+    private String parseName(Node name) throws DPNParserException {
         for (int i = 0; i < name.getChildNodes().getLength(); i++) {
             Node n = name.getChildNodes().item(i);
             if (isSupported(n) && Tags.TEXT.equals(n.getNodeName())) {
                 return n.getTextContent();
             }
         }
-        return null;
+        throw new DPNParserException("Expected tag \"" + Tags.TEXT + "\" inside \"" + Tags.NAME + "\" tag");
     }
 
     private boolean isSupported(Node node) {
@@ -283,6 +351,7 @@ public class DPNParser {
         Matcher m = p.matcher(id);
         return m.matches();
     }
+
     private boolean isValidVariable(String id) {
         Pattern p = Pattern.compile("^[a-z][a-z0-9_]*$");
         Matcher m = p.matcher(id);

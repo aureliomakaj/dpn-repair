@@ -174,32 +174,30 @@
             </arctype>
          </arc>
       </page>
-      <finalmarkings>
+      <initialmarkings>
          <marking>
             <place idref="n1">
                <text>0</text>
             </place>
-            <place idref="n2">
-               <text>0</text>
-            </place>
-            <place idref="n3">
-               <text>0</text>
-            </place>
+         </marking>
+      </initialmarkings>
+      <finalmarkings>
+         <marking>
             <place idref="n4">
                <text>0</text>
             </place>
          </marking>
       </finalmarkings>
       <variables>
-         <variable type="java.lang.Long">
-            <name>a</name>
+         <variable minValue="0" maxValue="100" initialValue="0" type="java.lang.Long">
+            <name><text>a</text></name>
             <position x="0" y="0"/>
-            <dimension height="50" width="50"/>
+            <dimension x="50" y="50"/>
          </variable>
-         <variable type="java.lang.Long">
-            <name>b</name>
+         <variable minValue="0" initialValue="0" type="java.lang.Long">
+            <name><text>b</text></name>
             <position x="0" y="0"/>
-            <dimension height="50" width="50"/>
+            <dimension x="50" y="50"/>
          </variable>
       </variables>
    </net>

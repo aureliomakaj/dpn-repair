@@ -18,7 +18,7 @@ public class Tags {
     static final String ARC_TYPE = "arctype";
     static final String FINAL_MARKINGS = "finalmarkings";
     static final String INITIAL_MARKINGS = "initialmarkings";
-    static final String MARKINGS = "marking";
+    static final String MARKING = "marking";
     static final String VARIABLES = "variables";
     static final String VARIABLE = "variable";
 }

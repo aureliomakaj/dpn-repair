@@ -1,15 +1,18 @@
 package org.example.dpnrepair.parser.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Marking {
-    private List<String> placeIds;
+    private List<String> placeIds = new ArrayList<>();
 
     public List<String> getPlaceIds() {
         return placeIds;
     }
 
-    public void setPlaceIds(List<String> placeIds) {
-        this.placeIds = placeIds;
+    public void addPlaceIds(String placeId) {
+        if(placeId != null){
+            this.placeIds.add(placeId);
+        }
     }
 }

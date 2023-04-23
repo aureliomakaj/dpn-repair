@@ -13,7 +13,7 @@ public class DPN {
     private List<Arc> arcs = new ArrayList<>();
     private Marking initialMarking;
     private Marking finalMarking;
-    private List<Variable> variables = new ArrayList<>();
+    private Map<String, Variable> variables = new HashMap<>();
 
     public String getId() {
         return id;
@@ -77,11 +77,11 @@ public class DPN {
         this.finalMarking = finalMarking;
     }
 
-    public List<Variable> getVariables() {
+    public Map<String, Variable> getVariables() {
         return variables;
     }
 
-    public void setVariables(List<Variable> variables) {
+    public void setVariables(Map<String, Variable> variables) {
         this.variables = variables;
     }
 }
