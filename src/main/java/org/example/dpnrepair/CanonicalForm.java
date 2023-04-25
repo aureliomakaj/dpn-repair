@@ -15,7 +15,7 @@ public class CanonicalForm {
     private boolean isConsistent;
     private OrderPair[][] diffMatrix;
 
-    private class OrderPair {
+    public static class OrderPair {
         private final long value;
         private final int loose; // 0 / 1
 
@@ -57,7 +57,9 @@ public class CanonicalForm {
         }
 
         public OrderPair sum(OrderPair second) {
-            return new OrderPair(value + second.getValue(), Math.min(loose, second.getLoose()));
+            // MAX_VALUE is used as infinity, but if we add something to it, it is not valid
+            long sum = value == Long.MAX_VALUE || second.getValue() == Long.MAX_VALUE ? Long.MAX_VALUE : value + second.getValue();
+            return new OrderPair(sum, Math.min(loose, second.getLoose()));
         }
     }
 
@@ -75,14 +77,14 @@ public class CanonicalForm {
         }
 
         buildDifferenceMatrix();
+        applyFloydWarshall();
+        checkConsistency();
         return isConsistent;
     }
 
     private void buildDifferenceMatrix() {
         initializeMatrix();
         fillFromConstraints();
-        applyFloydWarshall();
-        checkConsistency();
     }
 
     private void initializeMatrix() {
@@ -110,9 +112,9 @@ public class CanonicalForm {
     }
 
     private void applyFloydWarshall() {
-        for (int i = 0; i < vars.length; i++) {
-            for (int j = 0; j < vars.length; j++) {
-                for (int k = 0; k < vars.length; k++) {
+        for (int k = 0; k < vars.length; k++) {
+            for (int i = 0; i < vars.length; i++) {
+                for (int j = 0; j < vars.length; j++) {
                     diffMatrix[i][j] = diffMatrix[i][j].min(diffMatrix[i][k].sum(diffMatrix[k][j]));
                 }
             }
@@ -123,7 +125,7 @@ public class CanonicalForm {
         OrderPair check = new OrderPair(0L, 1);
         this.computed = true;
         for (int i = 0; i < vars.length; i++) {
-            if(diffMatrix[i][i].isLessThan(check)){
+            if (diffMatrix[i][i].isLessThan(check)) {
                 this.isConsistent = false;
                 return;
             }
