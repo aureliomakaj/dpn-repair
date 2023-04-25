@@ -7,7 +7,7 @@ public class Constraint {
     private String first;
     private String second;
     private boolean strict = false;
-    private Long value;
+    private long value;
     private List<String> read;
     private List<String> written;
 
@@ -35,11 +35,11 @@ public class Constraint {
         this.strict = strict;
     }
 
-    public Long getValue() {
+    public long getValue() {
         return value;
     }
 
-    public void setValue(Long value) {
+    public void setValue(long value) {
         this.value = value;
     }
 
@@ -64,4 +64,30 @@ public class Constraint {
         String op = strict ? "<" : "<=";
         return first + " - " + second + " " + op + " " + value;
     }
+
+    public boolean canCompareTo(Constraint other) {
+        return (getFirst().equals(other.getFirst()) || getFirst().equals(other.getSecond())) &&
+                (getSecond().equals(other.getFirst()) || getSecond().equals(other.getSecond()));
+    }
+
+    public boolean isEqualTo(Constraint other) {
+        return getValue() == other.getValue() && isStrict() == other.isStrict();
+    }
+
+    public boolean isLessThan(Constraint other) {
+        long k1 = getValue();
+        long k2 = other.getValue();
+        boolean first = k1 < k2;
+        boolean second = false;
+        if (k1 == k2) {
+            second = isStrict() && !other.isStrict();
+        }
+
+        return first || second;
+    }
+
+    public boolean isLessThanOrEqualTo(Constraint other) {
+        return isLessThan(other) || isEqualTo(other);
+    }
+
 }

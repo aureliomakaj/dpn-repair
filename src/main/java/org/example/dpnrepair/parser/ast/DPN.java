@@ -8,12 +8,12 @@ import java.util.Map;
 public class DPN {
     private String id;
     private String name;
-    private Map<String, Place> places = new HashMap<>();
-    private Map<String, Transition> transitions = new HashMap<>();
-    private List<Arc> arcs = new ArrayList<>();
+    private final Map<String, Place> places = new HashMap<>();
+    private final Map<String, Transition> transitions = new HashMap<>();
+    private final List<Arc> arcs = new ArrayList<>();
     private Marking initialMarking;
     private Marking finalMarking;
-    private Map<String, Variable> variables = new HashMap<>();
+    private final Map<String, Variable> variables = new HashMap<>();
 
     public String getId() {
         return id;
@@ -81,7 +81,9 @@ public class DPN {
         return variables;
     }
 
-    public void setVariables(Map<String, Variable> variables) {
-        this.variables = variables;
+    public void addVariable(Variable variable) {
+        if(variable != null){
+            this.variables.put(variable.getName(), variable);
+        }
     }
 }

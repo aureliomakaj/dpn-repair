@@ -1,5 +1,6 @@
 package org.example.dpnrepair.parser;
 
+import org.example.dpnrepair.exceptions.DPNParserException;
 import org.example.dpnrepair.parser.ast.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -16,11 +17,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DPNParser {
-    private Document xml;
+    private final Document xml;
     private DPN dpn;
-    private GuardToConstraintConverter guardConverter = new GuardToConstraintConverter();
+    private final GuardToConstraintConverter guardConverter = new GuardToConstraintConverter();
     private static final List<String> ALLOWED_TAGS = Arrays.asList(Tags.PNML, Tags.NET, Tags.NAME, Tags.TEXT, Tags.PAGE, Tags.PLACE, Tags.GRAPHICS, Tags.POSITION, Tags.DIMENSION, Tags.TRANSITION, Tags.FILL, Tags.WRITE_VAR, Tags.READ_VAR, Tags.ARC, Tags.ARC_TYPE, Tags.FINAL_MARKINGS, Tags.INITIAL_MARKINGS, Tags.MARKING, Tags.VARIABLES, Tags.VARIABLE);
 
+    private final Map<String, String> idsCollected = new HashMap<>();
 
     public DPNParser(String file) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -46,6 +48,7 @@ public class DPNParser {
             }
         }
 
+        addZed();
         checkConstraintVariables();
     }
 
@@ -70,12 +73,11 @@ public class DPNParser {
                 } else if (Tags.FINAL_MARKINGS.equals(n.getNodeName())) {
                     dpn.setFinalMarking(parseMarking(n));
                 } else if (Tags.VARIABLES.equals(n.getNodeName())) {
-                    dpn.setVariables(parseVariables(n));
+                    parseVariables(n);
                 }
             }
         }
     }
-
 
     private void parsePage(Node page) throws DPNParserException {
         for (int i = 0; i < page.getChildNodes().getLength(); i++) {
@@ -125,8 +127,12 @@ public class DPNParser {
             throw new DPNParserException("Invalid \"" + Attributes.ID + "\". It must be all lowercase, starting " +
                     "with letters or underscore and followed by letters, numbers, underscore or dash");
         }
-
-        return idNode.getTextContent().trim();
+        String id = idNode.getTextContent().trim();
+        if (idsCollected.containsKey(id)) {
+            throw new DPNParserException("Id \"" + id + "\" already used for tag \"" + idsCollected.get(id) + "\"");
+        }
+        idsCollected.put(id, node.getNodeName());
+        return id;
     }
 
     private Graphics parseGraphics(Node graphics) {
@@ -284,16 +290,13 @@ public class DPNParser {
         return m;
     }
 
-    private Map<String, Variable> parseVariables(Node variables) throws DPNParserException {
-        Map<String, Variable> vars = new HashMap<>();
+    private void parseVariables(Node variables) throws DPNParserException {
         for (int i = 0; i < variables.getChildNodes().getLength(); i++) {
             Node n = variables.getChildNodes().item(i);
             if (isSupported(n) && Tags.VARIABLE.equals(n.getNodeName())) {
-                Variable v = parseVariable(n);
-                vars.put(v.getName(), v);
+                dpn.addVariable(parseVariable(n));
             }
         }
-        return vars;
     }
 
     private Variable parseVariable(Node variable) throws DPNParserException {
@@ -343,11 +346,18 @@ public class DPNParser {
         throw new DPNParserException("Expected tag \"" + Tags.TEXT + "\" inside \"" + Tags.NAME + "\" tag");
     }
 
+    private void addZed() {
+        Variable zed = new Variable();
+        zed.setName("Z");
+        zed.setInitialValue(0L);
+        dpn.addVariable(zed);
+    }
+
     private void checkConstraintVariables() throws DPNParserException {
         for (Transition t : dpn.getTransitions().values()) {
             Constraint c = t.getGuard();
-            boolean firstOk = c.getFirst() == Constraint.ZETA || dpn.getVariables().containsKey(c.getFirst());
-            boolean secondOk = c.getSecond() == Constraint.ZETA || dpn.getVariables().containsKey(c.getSecond());
+            boolean firstOk = dpn.getVariables().containsKey(c.getFirst());
+            boolean secondOk = dpn.getVariables().containsKey(c.getSecond());
             if (!firstOk) {
                 throw new DPNParserException("Variable \"" + c.getFirst() + "\" is not defined for transition " + t.getId());
             }

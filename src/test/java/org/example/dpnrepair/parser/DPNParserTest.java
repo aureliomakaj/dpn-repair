@@ -1,6 +1,6 @@
 package org.example.dpnrepair.parser;
 
-import org.example.dpnrepair.parser.ast.DPN;
+import org.example.dpnrepair.exceptions.DPNParserException;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 

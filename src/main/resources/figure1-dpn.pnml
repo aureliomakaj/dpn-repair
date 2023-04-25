@@ -2,7 +2,7 @@
 <pnml>
    <net id="net1" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
       <name>
-         <text>New version of Unlabeled net</text>
+         <text>Simple net</text>
       </name>
       <page id="n0">
          <name>
@@ -18,7 +18,7 @@
                <dimension x="12.5" y="12.5"/>
             </graphics>
          </place>
-         <place id="n2">
+         <place id="n1">
             <name>
                <text>p2</text>
             </name>

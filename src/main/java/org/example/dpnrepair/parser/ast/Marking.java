@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Marking {
-    private List<String> placeIds = new ArrayList<>();
+    private final List<String> placeIds = new ArrayList<>();
 
     public List<String> getPlaceIds() {
         return placeIds;
