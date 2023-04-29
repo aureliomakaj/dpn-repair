@@ -3,7 +3,7 @@ package org.example.dpnrepair.parser.ast;
 import java.util.List;
 
 public class Constraint {
-    public static final String ZETA = "Z";
+    public static final String ZED = "Z";
     private String first;
     private String second;
     private boolean strict = false;
@@ -63,6 +63,24 @@ public class Constraint {
     public String toString() {
         String op = strict ? "<" : "<=";
         return first + " - " + second + " " + op + " " + value;
+    }
+
+    public String toStringWithoutZed() {
+        String res = "";
+        if(first.equals(ZED)) {
+            res += second;
+            res += strict ? " > " : " >= ";
+            res += (-value);
+        } else if (second.equals(ZED)) {
+            res += first;
+            res += strict ? " < " : " <= ";
+            res += value;
+        } else {
+            res += (first + " - " + second);
+            res += strict ? " < " : " <= ";
+            res += value;
+        }
+        return res;
     }
 
     public boolean canCompareTo(Constraint other) {

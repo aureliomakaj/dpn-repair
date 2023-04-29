@@ -82,12 +82,12 @@ public class GuardToConstraintConverter {
             if (isLeastToken(token)){
                 // X < K   =>   X - Z < K
                 constraint.setFirst(parts[0]);
-                constraint.setSecond(Constraint.ZETA);
+                constraint.setSecond(Constraint.ZED);
                 constraint.setValue(Long.parseLong(parts[1]));
                 constraint.setStrict(token.equals(LT));
             }else{
                 // X > K   =>   Z - X < -k
-                constraint.setFirst(Constraint.ZETA);
+                constraint.setFirst(Constraint.ZED);
                 constraint.setSecond(parts[0]);
                 constraint.setValue(-(Long.parseLong(parts[1])));
                 constraint.setStrict(token.equals(GT));

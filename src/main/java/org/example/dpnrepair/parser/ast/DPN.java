@@ -35,8 +35,8 @@ public class DPN {
         return places;
     }
 
-    public void addPlace(Place p){
-        if(p != null){
+    public void addPlace(Place p) {
+        if (p != null) {
             this.places.put(p.getId(), p);
         }
     }
@@ -45,8 +45,8 @@ public class DPN {
         return transitions;
     }
 
-    public void addTransition(Transition t){
-        if(t != null){
+    public void addTransition(Transition t) {
+        if (t != null) {
             this.transitions.put(t.getId(), t);
         }
     }
@@ -56,7 +56,7 @@ public class DPN {
     }
 
     public void addArc(Arc arc) {
-        if(arc != null){
+        if (arc != null) {
             this.arcs.add(arc);
         }
     }
@@ -82,7 +82,7 @@ public class DPN {
     }
 
     public void addVariable(Variable variable) {
-        if(variable != null){
+        if (variable != null) {
             this.variables.put(variable.getName(), variable);
         }
     }

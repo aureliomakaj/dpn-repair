@@ -6,11 +6,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CanonicalFormTest {
+public class CanonicalFormUtilitiesTest {
     @Test
     void when_inconsistent_system_then_is_not_consistent() {
         /*
@@ -38,8 +39,8 @@ public class CanonicalFormTest {
         variableMap.put(a.getName(), a);
         variableMap.put(b.getName(), b);
 
-        CanonicalForm cf = new CanonicalForm(Arrays.asList(first, second), variableMap);
-        assertFalse(cf.isConsistent());
+        DifferenceConstraintSet dcs = new DifferenceConstraintSet(new HashSet<>(Arrays.asList(first, second)), variableMap);
+        assertNull(CanonicalFormUtilities.getCanonicalForm(dcs));
 
     }
 
@@ -87,8 +88,12 @@ public class CanonicalFormTest {
         variableMap.put(b.getName(), b);
         variableMap.put(z.getName(), z);
 
-        CanonicalForm cf = new CanonicalForm(Arrays.asList(first, second, third, forth), variableMap);
-        assertTrue(cf.isConsistent());
+        DifferenceConstraintSet dcs = new DifferenceConstraintSet(new HashSet<>(Arrays.asList(first, second, third, forth)), variableMap);
+        DifferenceConstraintSet out = CanonicalFormUtilities.getCanonicalForm(dcs);
+        for(Constraint c : out.getConstraintSet()) {
+            System.out.println(c.toStringWithoutZed());
+        }
+        assertNotNull(out);
     }
 
     @Test
@@ -135,7 +140,7 @@ public class CanonicalFormTest {
         variableMap.put(b.getName(), b);
         variableMap.put(z.getName(), z);
 
-        CanonicalForm cf = new CanonicalForm(Arrays.asList(first, second, third, forth), variableMap);
-        assertTrue(cf.isConsistent());
+        DifferenceConstraintSet dcs = new DifferenceConstraintSet(new HashSet<>(Arrays.asList(first, second, third, forth)), variableMap);
+        assertNotNull(CanonicalFormUtilities.getCanonicalForm(dcs));
     }
 }
