@@ -2,7 +2,7 @@ package org.example.dpnrepair.parser.ast;
 
 import java.util.List;
 
-public class Constraint {
+public class Constraint implements Cloneable {
     public static final String ZED = "Z";
     private String first;
     private String second;
@@ -51,6 +51,12 @@ public class Constraint {
         this.read = read;
     }
 
+    public void addRead(String read) {
+        if (!read.isEmpty()) {
+            this.read.add(read);
+        }
+    }
+
     public List<String> getWritten() {
         return written;
     }
@@ -67,7 +73,7 @@ public class Constraint {
 
     public String toStringWithoutZed() {
         String res = "";
-        if(first.equals(ZED)) {
+        if (first.equals(ZED)) {
             res += second;
             res += strict ? " > " : " >= ";
             res += (-value);
@@ -108,4 +114,12 @@ public class Constraint {
         return isLessThan(other) || isEqualTo(other);
     }
 
+    @Override
+    public Constraint clone() {
+        try {
+            return (Constraint) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

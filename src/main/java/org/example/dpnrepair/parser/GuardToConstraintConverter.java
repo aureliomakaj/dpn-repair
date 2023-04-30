@@ -85,12 +85,14 @@ public class GuardToConstraintConverter {
                 constraint.setSecond(Constraint.ZED);
                 constraint.setValue(Long.parseLong(parts[1]));
                 constraint.setStrict(token.equals(LT));
+                constraint.addRead(Constraint.ZED);
             }else{
                 // X > K   =>   Z - X < -k
                 constraint.setFirst(Constraint.ZED);
                 constraint.setSecond(parts[0]);
                 constraint.setValue(-(Long.parseLong(parts[1])));
                 constraint.setStrict(token.equals(GT));
+                constraint.addRead(Constraint.ZED);
             }
         }
     }

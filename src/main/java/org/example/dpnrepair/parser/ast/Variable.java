@@ -1,6 +1,6 @@
 package org.example.dpnrepair.parser.ast;
 
-public class Variable {
+public class Variable implements Cloneable{
     private String name;
     private long minValue;
     private long maxValue;
@@ -45,5 +45,13 @@ public class Variable {
 
     public void setGraphics(Graphics graphics) {
         this.graphics = graphics;
+    }
+
+    public Variable clone() {
+        try {
+            return (Variable) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

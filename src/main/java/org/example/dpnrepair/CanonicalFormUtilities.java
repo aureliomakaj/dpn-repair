@@ -3,12 +3,12 @@ package org.example.dpnrepair;
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.Variable;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static java.util.Arrays.*;
 
 public class CanonicalFormUtilities {
     public static class OrderPair {
@@ -61,6 +61,7 @@ public class CanonicalFormUtilities {
 
     /**
      * Computete Canonical Form of a difference constraint set if it is consistent, null otherwise
+     *
      * @param differenceConstraintSet
      * @return
      */
@@ -124,12 +125,13 @@ public class CanonicalFormUtilities {
         return true;
     }
 
-    private static DifferenceConstraintSet diffMatrixToConstraintSet(OrderPair[][] diffMatrix, String [] intToVar, Map<String, Variable> variables) {
+    private static DifferenceConstraintSet diffMatrixToConstraintSet(OrderPair[][] diffMatrix, String[] intToVar,
+                                                                     Map<String, Variable> variables) {
         Set<Constraint> constraintSet = new HashSet<>();
         for (int i = 0; i < diffMatrix.length; i++) {
             for (int j = 0; j < diffMatrix.length; j++) {
                 OrderPair pair = diffMatrix[i][j];
-                if(pair.getValue() != Float.MAX_VALUE && i != j){
+                if (pair.getValue() != Long.MAX_VALUE && i != j) {
                     Constraint c = new Constraint();
                     c.setFirst(intToVar[i]);
                     c.setSecond(intToVar[j]);
@@ -141,4 +143,96 @@ public class CanonicalFormUtilities {
         }
         return new DifferenceConstraintSet(constraintSet, variables);
     }
+
+    public static DifferenceConstraintSet addConstraint(DifferenceConstraintSet constraintSet, Constraint toBeAdd,
+                                                        Map<String, Variable> toBeAddVariables) {
+        if (toBeAdd.getRead().size() == 2) {
+            DifferenceConstraintSet newSet = union(constraintSet, Collections.singletonList(toBeAdd), toBeAddVariables);
+            return getCanonicalForm(newSet);
+        } else {
+            Variable first = toBeAddVariables.get(toBeAdd.getFirst());
+            Variable second = toBeAddVariables.get(toBeAdd.getSecond());
+            Map<String, Variable> newToBeAddVariables = new HashMap<>(toBeAddVariables);
+            Variable firstAsWritten = null;
+            Variable secondAsWritten = null;
+            List<String> writtenVars = new ArrayList<>();
+            Constraint newConstraint = toBeAdd.clone();
+            if (toBeAdd.getWritten().contains(first.getName())) {
+                firstAsWritten = new Variable();
+                firstAsWritten.setName(first.getName() + "_w");
+                writtenVars.add(first.getName());
+            }
+            if (toBeAdd.getWritten().contains(second.getName())) {
+                secondAsWritten = new Variable();
+                secondAsWritten.setName(second.getName() + "_w");
+                writtenVars.add(second.getName());
+            }
+            if (firstAsWritten != null) {
+                newConstraint.setFirst(firstAsWritten.getName());
+                newToBeAddVariables.put(firstAsWritten.getName(), firstAsWritten);
+            }
+            if (secondAsWritten != null) {
+                newConstraint.setSecond(secondAsWritten.getName());
+                newToBeAddVariables.put(secondAsWritten.getName(), secondAsWritten);
+            }
+            DifferenceConstraintSet canonicalForm = getCanonicalForm(
+                    union(constraintSet, Collections.singletonList(newConstraint), newToBeAddVariables)
+            );
+            if (canonicalForm == null) {
+                return null;
+            }
+
+            // Canonical form is consistent, thus remove old variable occurrences and rename the fresh ones
+            Set<Constraint> finalConstraintSet = new HashSet<>(canonicalForm.getConstraintSet());
+            finalConstraintSet = finalConstraintSet.stream()
+                    .filter(item -> !writtenVars.contains(item.getFirst()) && !writtenVars.contains(item.getSecond()))
+                    .map(item -> { // Rename fresh variables to replace the old ones
+                        if (item.getFirst().endsWith("_w")) {
+                            // Remove _w from the end
+                            item.setFirst(item.getFirst().substring(0, item.getFirst().length() - 2));
+                        }
+                        if (item.getSecond().endsWith("_w")) {
+                            item.setSecond(item.getSecond().substring(0, item.getSecond().length() - 2));
+                        }
+                        return item;
+                    })
+                    .collect(Collectors.toSet());
+
+            Map<String, Variable> finalVarMap = new HashMap<>(canonicalForm.getVariables());
+            finalVarMap = finalVarMap.entrySet()
+                    .stream()
+                    .filter(entry -> !writtenVars.contains(entry.getKey()))
+                    .collect(Collectors.toMap(//Rename fresh variables to replace the old ones
+                            entry -> {
+                                if (entry.getKey().endsWith("_w")) {
+                                    return entry.getKey().substring(0, entry.getKey().length() - 2);
+                                }
+                                return entry.getKey();
+                            },
+                            entry -> {
+                                if (entry.getKey().endsWith("_w")) {
+                                    entry.getValue().setName(entry.getValue().getName().substring(0, entry.getValue().getName().length() - 2));
+                                }
+                                return entry.getValue();
+                            }
+                    ));
+
+            return new DifferenceConstraintSet(finalConstraintSet, finalVarMap);
+        }
+    }
+
+    public static DifferenceConstraintSet union(DifferenceConstraintSet constraintSet, List<Constraint> toBeAdd,
+                                                Map<String, Variable> toBeAddVariables) {
+        Set<Constraint> newConstraintSet = new HashSet<>(constraintSet.getConstraintSet());
+        Map<String, Variable> newVariableMap = new HashMap<>(constraintSet.getVariables());
+        for (Constraint c : toBeAdd) {
+            Variable first = toBeAddVariables.get(c.getFirst());
+            Variable second = toBeAddVariables.get(c.getSecond());
+            newConstraintSet.add(c);
+            newVariableMap.putIfAbsent(first.getName(), first);
+            newVariableMap.putIfAbsent(second.getName(), second);
+        }
+        return new DifferenceConstraintSet(newConstraintSet, newVariableMap);
+    }
+
 }

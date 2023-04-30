@@ -4,16 +4,13 @@ import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.Variable;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CanonicalFormUtilitiesTest {
     @Test
-    void when_inconsistent_system_then_is_not_consistent() {
+    void when_inconsistent_system_then_no_canonical_form() {
         /*
          * a - b < 0
          * b - a <= 0
@@ -45,7 +42,72 @@ public class CanonicalFormUtilitiesTest {
     }
 
     @Test
-    void when_consistent_system_then_is_consistent() {
+    void when_consistent_system_then_canonical_form() {
+        assertNotNull(CanonicalFormUtilities.getCanonicalForm(getDifferenceConstraintSetOne()));
+    }
+
+    @Test
+    void when_consistent_system_2_then_canonical_form() {
+        assertNotNull(CanonicalFormUtilities.getCanonicalForm(getDifferenceConstraintSetTwo()));
+    }
+
+    @Test
+    void when_adding_constraint_only_read_breaks_consistency_then_no_canonical_form() {
+        DifferenceConstraintSet origin = getDifferenceConstraintSetOne();
+        // a < 2    =>   a - Z < 2
+        Constraint c = new Constraint();
+        c.setFirst("a");
+        c.setSecond(Constraint.ZED);
+        c.setValue(2);
+        c.setStrict(true);
+        c.setRead(Arrays.asList("a", Constraint.ZED));
+        DifferenceConstraintSet out = CanonicalFormUtilities.addConstraint(origin, c, origin.getVariables());
+        assertNull(out);
+    }
+    @Test
+    void when_adding_constraint_only_read_is_consistent_then_canonical_form() {
+        DifferenceConstraintSet origin = getDifferenceConstraintSetOne();
+        // a >= 7    =>   Z - a <= -7
+        Constraint c = new Constraint();
+        c.setFirst(Constraint.ZED);
+        c.setSecond("a");
+        c.setValue(-7);
+        c.setStrict(false);
+        c.setRead(Arrays.asList("a", Constraint.ZED));
+        DifferenceConstraintSet out = CanonicalFormUtilities.addConstraint(origin, c, origin.getVariables());
+        assertNotNull(out);
+    }
+
+    @Test
+    void when_adding_constraint_with_write_is_consistent_then_canonical_form() {
+        DifferenceConstraintSet origin = getDifferenceConstraintSetOne();
+        // a >= 7    =>   Z - a <= -7
+        Constraint c = new Constraint();
+        c.setFirst(Constraint.ZED);
+        c.setSecond("a");
+        c.setValue(-7);
+        c.setStrict(false);
+        c.setRead(Collections.singletonList(Constraint.ZED));
+        c.setWritten(Collections.singletonList("a"));
+        DifferenceConstraintSet out = CanonicalFormUtilities.addConstraint(origin, c, origin.getVariables());
+        assertNotNull(out);
+    }
+    @Test
+    void when_adding_constraint_with_write_breaks_consistency_then_no_canonical_form() {
+        DifferenceConstraintSet origin = getDifferenceConstraintSetOne();
+        // b - a < 2
+        Constraint c = new Constraint();
+        c.setFirst("b");
+        c.setSecond("a");
+        c.setValue(2);
+        c.setStrict(true);
+        c.setRead(Collections.singletonList("b"));
+        c.setWritten(Collections.singletonList("a"));
+        DifferenceConstraintSet out = CanonicalFormUtilities.addConstraint(origin, c, origin.getVariables());
+        assertNull(out);
+    }
+
+    private DifferenceConstraintSet getDifferenceConstraintSetOne() {
         /*
          * a >= 5
          * b <= 10
@@ -88,16 +150,10 @@ public class CanonicalFormUtilitiesTest {
         variableMap.put(b.getName(), b);
         variableMap.put(z.getName(), z);
 
-        DifferenceConstraintSet dcs = new DifferenceConstraintSet(new HashSet<>(Arrays.asList(first, second, third, forth)), variableMap);
-        DifferenceConstraintSet out = CanonicalFormUtilities.getCanonicalForm(dcs);
-        for(Constraint c : out.getConstraintSet()) {
-            System.out.println(c.toStringWithoutZed());
-        }
-        assertNotNull(out);
+        return new DifferenceConstraintSet(new HashSet<>(Arrays.asList(first, second, third, forth)), variableMap);
     }
 
-    @Test
-    void when_consistent_system_2_then_is_consistent() {
+    private DifferenceConstraintSet getDifferenceConstraintSetTwo() {
         /*
          * a - b < 2
          * b > 0
@@ -140,7 +196,6 @@ public class CanonicalFormUtilitiesTest {
         variableMap.put(b.getName(), b);
         variableMap.put(z.getName(), z);
 
-        DifferenceConstraintSet dcs = new DifferenceConstraintSet(new HashSet<>(Arrays.asList(first, second, third, forth)), variableMap);
-        assertNotNull(CanonicalFormUtilities.getCanonicalForm(dcs));
+        return new DifferenceConstraintSet(new HashSet<>(Arrays.asList(first, second, third, forth)), variableMap);
     }
 }
