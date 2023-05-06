@@ -2,6 +2,7 @@ package org.example.dpnrepair;
 
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.Variable;
+import org.example.dpnrepair.semantics.DifferenceConstraintSet;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

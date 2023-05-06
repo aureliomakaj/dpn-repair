@@ -1,4 +1,4 @@
-package org.example.dpnrepair;
+package org.example.dpnrepair.semantics;
 
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.Variable;

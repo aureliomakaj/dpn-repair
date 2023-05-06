@@ -2,68 +2,20 @@ package org.example.dpnrepair;
 
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.Variable;
+import org.example.dpnrepair.semantics.DifferenceConstraintSet;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.util.Arrays.*;
-
 public class CanonicalFormUtilities {
-    public static class OrderPair {
-        private final long value;
-        private final int loose; // 0 / 1
-
-        public OrderPair(long value, int loose) {
-            this.value = value;
-            this.loose = loose;
-        }
-
-        public long getValue() {
-            return value;
-        }
-
-        public int getLoose() {
-            return loose;
-        }
-
-        public boolean isEqualTo(OrderPair other) {
-            return getValue() == other.getValue() && getLoose() == other.getLoose();
-        }
-
-        public boolean isLessThan(OrderPair other) {
-            long k1 = getValue();
-            long k2 = other.getValue();
-            boolean first = k1 < k2;
-            boolean second = false;
-            if (k1 == k2) {
-                second = getLoose() < other.getLoose();
-            }
-
-            return first || second;
-        }
-
-        public boolean isLessThanOrEqualTo(OrderPair other) {
-            return isLessThan(other) || isEqualTo(other);
-        }
-
-        public OrderPair min(OrderPair second) {
-            return isLessThanOrEqualTo(second) ? this : second;
-        }
-
-        public OrderPair sum(OrderPair second) {
-            // MAX_VALUE is used as infinity, but if we add something to it, it is not valid
-            long sum = value == Long.MAX_VALUE || second.getValue() == Long.MAX_VALUE ? Long.MAX_VALUE : value + second.getValue();
-            return new OrderPair(sum, Math.min(loose, second.getLoose()));
-        }
-    }
 
     /**
      * Computete Canonical Form of a difference constraint set if it is consistent, null otherwise
      *
      * @param differenceConstraintSet
-     * @return
+     * @return DifferenceConstraintSet
      */
     public static DifferenceConstraintSet getCanonicalForm(DifferenceConstraintSet differenceConstraintSet) {
         int varSize = differenceConstraintSet.getVariables().keySet().size();
@@ -233,6 +185,54 @@ public class CanonicalFormUtilities {
             newVariableMap.putIfAbsent(second.getName(), second);
         }
         return new DifferenceConstraintSet(newConstraintSet, newVariableMap);
+    }
+
+    public static class OrderPair {
+        private final long value;
+        private final int loose; // 0 / 1
+
+        public OrderPair(long value, int loose) {
+            this.value = value;
+            this.loose = loose;
+        }
+
+        public long getValue() {
+            return value;
+        }
+
+        public int getLoose() {
+            return loose;
+        }
+
+        public boolean isEqualTo(OrderPair other) {
+            return getValue() == other.getValue() && getLoose() == other.getLoose();
+        }
+
+        public boolean isLessThan(OrderPair other) {
+            long k1 = getValue();
+            long k2 = other.getValue();
+            boolean first = k1 < k2;
+            boolean second = false;
+            if (k1 == k2) {
+                second = getLoose() < other.getLoose();
+            }
+
+            return first || second;
+        }
+
+        public boolean isLessThanOrEqualTo(OrderPair other) {
+            return isLessThan(other) || isEqualTo(other);
+        }
+
+        public OrderPair min(OrderPair second) {
+            return isLessThanOrEqualTo(second) ? this : second;
+        }
+
+        public OrderPair sum(OrderPair second) {
+            // MAX_VALUE is used as infinity, but if we add something to it, it is not valid
+            long sum = value == Long.MAX_VALUE || second.getValue() == Long.MAX_VALUE ? Long.MAX_VALUE : value + second.getValue();
+            return new OrderPair(sum, Math.min(loose, second.getLoose()));
+        }
     }
 
 }

@@ -3,6 +3,7 @@ package org.example.dpnrepair.parser;
 import org.example.dpnrepair.exceptions.DPNParserException;
 import org.example.dpnrepair.parser.ast.Constraint;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +14,7 @@ public class GuardToConstraintConverter {
     private final String GT = ">";
     private final String GTE = ">=";
     private final String MINUS = "-";
+    private final String EQ = "=";
 
     public Constraint convert(String guard, List<String> readVars, List<String> writeVars) throws DPNParserException {
         Constraint constraint = new Constraint();
@@ -20,6 +22,22 @@ public class GuardToConstraintConverter {
         constraint.setWritten(writeVars);
         parseGuard(guard, constraint);
         return constraint;
+    }
+
+    /**
+     * Guard a = 7 is considered as a >= 7 and a <= 7
+     * @param guard
+     * @param readVars
+     * @param writeVars
+     * @return
+     * @throws DPNParserException
+     */
+    public List<Constraint> convertEquality(String guard, List<String> readVars, List<String> writeVars) throws DPNParserException {
+        List<Constraint> result = new ArrayList<>();
+        result.add(convert(String.join(LTE, guard.split(EQ)), readVars, writeVars));
+        result.add(convert(String.join(GTE, guard.split(EQ)), readVars, writeVars));
+
+        return result;
     }
 
     private void parseGuard(String guard, Constraint constraint) throws DPNParserException {
@@ -64,14 +82,14 @@ public class GuardToConstraintConverter {
             if (token.equals(LT) || token.equals(GT)) {
                 constraint.setStrict(true);
             }
-        } else if (isVariable(parts[1])){
-            if (isLeastToken(token)){
+        } else if (isVariable(parts[1])) {
+            if (isLeastToken(token)) {
                 // X < Y   =>   X - Y < 0
                 constraint.setFirst(parts[0]);
                 constraint.setSecond(parts[1]);
                 constraint.setValue(0L);
                 constraint.setStrict(token.equals(LT));
-            }else{
+            } else {
                 // X > Y   =>   Y - X < 0
                 constraint.setFirst(parts[1]);
                 constraint.setSecond(parts[0]);
@@ -79,14 +97,14 @@ public class GuardToConstraintConverter {
                 constraint.setStrict(token.equals(GT));
             }
         } else {
-            if (isLeastToken(token)){
+            if (isLeastToken(token)) {
                 // X < K   =>   X - Z < K
                 constraint.setFirst(parts[0]);
                 constraint.setSecond(Constraint.ZED);
                 constraint.setValue(Long.parseLong(parts[1]));
                 constraint.setStrict(token.equals(LT));
                 constraint.addRead(Constraint.ZED);
-            }else{
+            } else {
                 // X > K   =>   Z - X < -k
                 constraint.setFirst(Constraint.ZED);
                 constraint.setSecond(parts[0]);

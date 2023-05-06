@@ -14,6 +14,7 @@ public class DPN {
     private Marking initialMarking;
     private Marking finalMarking;
     private final Map<String, Variable> variables = new HashMap<>();
+    private final Map<String, List<String[]>> adjacentList = new HashMap<>();
 
     public String getId() {
         return id;
@@ -86,4 +87,22 @@ public class DPN {
             this.variables.put(variable.getName(), variable);
         }
     }
+
+    public void elaborateAdjacentList() {
+        Map<String, String> placeToTransit = new HashMap<>();
+        Map<String, String> transitToPlace = new HashMap<>();
+        for (Arc a : arcs) {
+            if (places.get(a.getSource()) != null) {
+                placeToTransit.put(a.getSource(), a.getTarget());
+            }
+            if (transitions.get(a.getSource()) != null) {
+                transitToPlace.put(a.getSource(), a.getTarget());
+            }
+        }
+        for(Map.Entry<String, String> entry: placeToTransit.entrySet()) {
+            adjacentList.putIfAbsent(entry.getKey(), new ArrayList<>());
+            adjacentList.get(entry.getKey()).add(new String[]{transitToPlace.get(entry.getValue()), entry.getValue()});
+        }
+    }
+
 }

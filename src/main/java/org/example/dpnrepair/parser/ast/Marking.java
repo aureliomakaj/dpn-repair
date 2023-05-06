@@ -1,18 +1,20 @@
 package org.example.dpnrepair.parser.ast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Marking {
-    private final List<String> placeIds = new ArrayList<>();
+    private final Map<String, Integer> placeTokenMap = new HashMap<>();
 
-    public List<String> getPlaceIds() {
-        return placeIds;
+    public Map<String, Integer> getPlaceTokenMap() {
+        return placeTokenMap;
     }
 
-    public void addPlaceIds(String placeId) {
-        if(placeId != null){
-            this.placeIds.add(placeId);
+    public void addPlaceWithToken(String placeId, int tokenNumber) {
+        if(placeId != null && tokenNumber >= 0){
+            this.placeTokenMap.put(placeId, tokenNumber);
         }
     }
 }
