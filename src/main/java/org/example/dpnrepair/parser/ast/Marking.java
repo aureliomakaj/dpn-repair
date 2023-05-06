@@ -13,7 +13,7 @@ public class Marking {
     }
 
     public void addPlaceWithToken(String placeId, int tokenNumber) {
-        if(placeId != null && tokenNumber >= 0){
+        if (placeId != null && tokenNumber >= 0) {
             this.placeTokenMap.put(placeId, tokenNumber);
         }
     }

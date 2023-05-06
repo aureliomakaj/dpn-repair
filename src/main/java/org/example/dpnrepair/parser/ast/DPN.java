@@ -88,20 +88,36 @@ public class DPN {
         }
     }
 
+    public Map<String, List<String[]>> getAdjacentList() {
+        return adjacentList;
+    }
+
+    /**
+     * Build an adjacent list for the representation of the graph
+     */
     public void elaborateAdjacentList() {
-        Map<String, String> placeToTransit = new HashMap<>();
+        // One place can split to different transitions
+        Map<String, List<String>> placeToTransit = new HashMap<>();
         Map<String, String> transitToPlace = new HashMap<>();
+        // Arcs can be place -> transition or transition -> place
         for (Arc a : arcs) {
+            // place -> transition
             if (places.get(a.getSource()) != null) {
-                placeToTransit.put(a.getSource(), a.getTarget());
+                placeToTransit.putIfAbsent(a.getSource(), new ArrayList<>());
+                placeToTransit.get(a.getSource()).add(a.getTarget());
             }
+            // transition -> place
             if (transitions.get(a.getSource()) != null) {
                 transitToPlace.put(a.getSource(), a.getTarget());
             }
         }
-        for(Map.Entry<String, String> entry: placeToTransit.entrySet()) {
+        // Build a map where each key is a node and the value is the list of incident edges
+        // with the transition as an arc
+        for (Map.Entry<String, List<String>> entry : placeToTransit.entrySet()) {
             adjacentList.putIfAbsent(entry.getKey(), new ArrayList<>());
-            adjacentList.get(entry.getKey()).add(new String[]{transitToPlace.get(entry.getValue()), entry.getValue()});
+            for (String transit : entry.getValue()) {
+                adjacentList.get(entry.getKey()).add(new String[]{transitToPlace.get(transit), transit});
+            }
         }
     }
 

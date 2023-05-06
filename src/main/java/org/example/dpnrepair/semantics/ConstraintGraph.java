@@ -27,11 +27,18 @@ public class ConstraintGraph {
     class Node {
         private Marking marking;
         private DifferenceConstraintSet canonicalForm;
+        private boolean visited = false;
     }
 
     class Arc {
         private Node origin;
         private Transition t;
         private Node destination;
+        private EdgeType type;
+    }
+
+    enum EdgeType {
+        DISCOVERY_EDGE,
+        BACK_EDGE
     }
 }
