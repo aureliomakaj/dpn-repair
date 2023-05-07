@@ -10,15 +10,12 @@ public class DPN {
     private String name;
     private final Map<String, Place> places = new HashMap<>();
     private final Map<String, Transition> transitions = new HashMap<>();
-    private final List<Arc> arcs = new ArrayList<>();
+    private final List<Arc> inputArcs = new ArrayList<>();
+    private final List<Arc> outputArcs = new ArrayList<>();
     private Marking initialMarking;
     private Marking finalMarking;
     private final Map<String, Variable> variables = new HashMap<>();
     private final Map<String, List<String[]>> adjacentList = new HashMap<>();
-
-    public String getId() {
-        return id;
-    }
 
     public void setId(String id) {
         this.id = id;
@@ -52,13 +49,15 @@ public class DPN {
         }
     }
 
-    public List<Arc> getArcs() {
-        return arcs;
+    public void addInputArc(Arc arc) {
+        if (arc != null) {
+            this.inputArcs.add(arc);
+        }
     }
 
-    public void addArc(Arc arc) {
+    public void addOutputArc(Arc arc) {
         if (arc != null) {
-            this.arcs.add(arc);
+            this.outputArcs.add(arc);
         }
     }
 
@@ -96,27 +95,17 @@ public class DPN {
      * Build an adjacent list for the representation of the graph
      */
     public void elaborateAdjacentList() {
-        // One place can split to different transitions
-        Map<String, List<String>> placeToTransit = new HashMap<>();
-        Map<String, String> transitToPlace = new HashMap<>();
-        // Arcs can be place -> transition or transition -> place
-        for (Arc a : arcs) {
-            // place -> transition
-            if (places.get(a.getSource()) != null) {
-                placeToTransit.putIfAbsent(a.getSource(), new ArrayList<>());
-                placeToTransit.get(a.getSource()).add(a.getTarget());
-            }
-            // transition -> place
-            if (transitions.get(a.getSource()) != null) {
-                transitToPlace.put(a.getSource(), a.getTarget());
-            }
+        Map<String, List<String>> transToPlace = new HashMap<>();
+        for (Arc out : outputArcs) {
+            transToPlace.putIfAbsent(out.getSource(), new ArrayList<>());
+            transToPlace.get(out.getSource()).add(out.getTarget());
         }
-        // Build a map where each key is a node and the value is the list of incident edges
-        // with the transition as an arc
-        for (Map.Entry<String, List<String>> entry : placeToTransit.entrySet()) {
-            adjacentList.putIfAbsent(entry.getKey(), new ArrayList<>());
-            for (String transit : entry.getValue()) {
-                adjacentList.get(entry.getKey()).add(new String[]{transitToPlace.get(transit), transit});
+        for (Arc in : inputArcs) {
+            adjacentList.putIfAbsent(in.getSource(), new ArrayList<>());
+            if (transToPlace.get(in.getTarget()) != null) {
+                for (String targetPlace : transToPlace.get(in.getTarget())) {
+                    adjacentList.get(in.getSource()).add(new String[]{targetPlace, in.getTarget()});
+                }
             }
         }
     }

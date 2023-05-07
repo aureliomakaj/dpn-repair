@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 public class DPNParser {
     private final Document xml;
     private DPN dpn;
-    private final GuardToConstraintConverter guardConverter = new GuardToConstraintConverter();
     private static final List<String> ALLOWED_TAGS = Arrays.asList(Tags.PNML, Tags.NET, Tags.NAME, Tags.TEXT, Tags.PAGE, Tags.PLACE, Tags.GRAPHICS, Tags.POSITION, Tags.DIMENSION, Tags.TRANSITION, Tags.FILL, Tags.WRITE_VAR, Tags.READ_VAR, Tags.ARC, Tags.ARC_TYPE, Tags.FINAL_MARKINGS, Tags.INITIAL_MARKINGS, Tags.MARKING, Tags.VARIABLES, Tags.VARIABLE);
 
     private final Map<String, String> idsCollected = new HashMap<>();
@@ -28,6 +27,10 @@ public class DPNParser {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         xml = builder.parse(new File(file));
         xml.normalizeDocument();
+    }
+
+    public DPN getDpn() {
+        return dpn;
     }
 
     public void parse() throws DPNParserException {
@@ -78,21 +81,32 @@ public class DPNParser {
                 }
             }
         }
+        if (!parsedPage) {
+            throw new DPNParserException("\"" + Tags.PAGE + "\" is missing");
+        }
     }
 
     private void parsePage(Node page) throws DPNParserException {
         for (int i = 0; i < page.getChildNodes().getLength(); i++) {
             Node n = page.getChildNodes().item(i);
             if (isSupported(n)) {
-                if (Tags.PLACE.equals(n.getNodeName())) {
-                    Place p = parsePlace(n);
-                    dpn.addPlace(p);
-                } else if (Tags.TRANSITION.equals(n.getNodeName())) {
-                    Transition t = parseTransition(n);
-                    dpn.addTransition(t);
-                } else if (Tags.ARC.equals(n.getNodeName())) {
-                    Arc a = parseArc(n);
-                    dpn.addArc(a);
+                switch (n.getNodeName()) {
+                    case Tags.PLACE:
+                        Place p = parsePlace(n);
+                        dpn.addPlace(p);
+                        break;
+                    case Tags.TRANSITION:
+                        Transition t = parseTransition(n);
+                        dpn.addTransition(t);
+                        break;
+                    case Tags.ARC:
+                        Arc a = parseArc(n);
+                        if (a.isInput()) {
+                            dpn.addInputArc(a);
+                        } else {
+                            dpn.addOutputArc(a);
+                        }
+                        break;
                 }
             }
         }
@@ -142,21 +156,25 @@ public class DPNParser {
         for (int i = 0; i < graphics.getChildNodes().getLength(); i++) {
             Node n = graphics.getChildNodes().item(i);
             if (isSupported(n)) {
-                if (Tags.POSITION.equals(n.getNodeName())) {
-                    Position p = parsePosition(n);
-                    if (p != null) {
+                switch (n.getNodeName()) {
+                    case Tags.POSITION:
+                        Position p = parsePosition(n);
+                        if (p != null) {
+                            notEmpty = true;
+                            g.setPosition(p);
+                        }
+                        break;
+                    case Tags.DIMENSION:
+                        Dimension d = parseDimension(n);
+                        if (d != null) {
+                            notEmpty = true;
+                            g.setDimension(d);
+                        }
+                        break;
+                    case Tags.FILL:
                         notEmpty = true;
-                        g.setPosition(p);
-                    }
-                } else if (Tags.DIMENSION.equals(n.getNodeName())) {
-                    Dimension d = parseDimension(n);
-                    if (d != null) {
-                        notEmpty = true;
-                        g.setDimension(d);
-                    }
-                } else if (Tags.FILL.equals(n.getNodeName())) {
-                    notEmpty = true;
-                    g.setFill(n.getTextContent().trim());
+                        g.setFill(n.getTextContent().trim());
+                        break;
                 }
             }
         }
@@ -172,12 +190,12 @@ public class DPNParser {
 
         Node x = attr.getNamedItem(Attributes.X);
         if (x != null) {
-            p.setX(Float.valueOf(x.getTextContent().trim()));
+            p.setX(Float.parseFloat(x.getTextContent().trim()));
         }
 
         Node y = attr.getNamedItem(Attributes.Y);
         if (y != null) {
-            p.setY(Float.valueOf(y.getTextContent().trim()));
+            p.setY(Float.parseFloat(y.getTextContent().trim()));
         }
 
         return p;
@@ -192,12 +210,12 @@ public class DPNParser {
 
         Node width = attr.getNamedItem(Attributes.X);
         if (width != null) {
-            d.setWidth(Float.valueOf(width.getTextContent().trim()));
+            d.setWidth(Float.parseFloat(width.getTextContent().trim()));
         }
 
         Node height = attr.getNamedItem(Attributes.Y);
         if (height != null) {
-            d.setHeight(Float.valueOf(height.getTextContent().trim()));
+            d.setHeight(Float.parseFloat(height.getTextContent().trim()));
         }
 
         return d;
@@ -238,7 +256,7 @@ public class DPNParser {
         }
 
         String guard = guardNode.getTextContent().trim();
-        return guardConverter.convert(guard, readVars, writeVars);
+        return GuardToConstraintConverter.convert(guard, readVars, writeVars);
     }
 
     private Arc parseArc(Node arc) throws DPNParserException {
@@ -260,7 +278,12 @@ public class DPNParser {
             throw new DPNParserException("\"" + Tags.ARC + "\" tag must have a \"" + Attributes.SOURCE + "\" attribute");
         }
         String sourceName = sourceNode.getTextContent().trim();
-        if (!dpn.getPlaces().containsKey(sourceName) && !dpn.getTransitions().containsKey(sourceName)) {
+
+        if (dpn.getPlaces().containsKey(sourceName)) {
+            a.setInput(true);
+        } else if(dpn.getTransitions().containsKey(sourceName)) {
+            a.setInput(false);
+        } else {
             throw new DPNParserException("\"" + sourceName + "\" in arc \"" + a.getName() + "\" isn't a valid place nor transition");
         }
         a.setSource(sourceName);
@@ -291,8 +314,9 @@ public class DPNParser {
                             throw new DPNParserException("\"" + Tags.PLACE + "\" attribute inside \"" + Tags.MARKING +
                                     "\" must have an \"" + Attributes.ID_REF + "\" attribute");
                         }
-                        String tokenNumber = parseTextName(sub_node);
-                        m.addPlaceWithToken(refPlace.getTextContent().trim(), Integer.parseInt(tokenNumber));
+                        int tokenNumber = Integer.parseInt(parseTextName(sub_node));
+                        tokenNumber = Math.max(tokenNumber, 0);
+                        m.addPlaceWithToken(refPlace.getTextContent().trim(), tokenNumber);
                     }
                 }
             }

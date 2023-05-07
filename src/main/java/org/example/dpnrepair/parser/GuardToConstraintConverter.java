@@ -9,14 +9,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GuardToConstraintConverter {
-    private final String LT = "<";
-    private final String LTE = "<=";
-    private final String GT = ">";
-    private final String GTE = ">=";
-    private final String MINUS = "-";
-    private final String EQ = "=";
+    private static final String LT = "<";
+    private static final String LTE = "<=";
+    private static final String GT = ">";
+    private static final String GTE = ">=";
+    private static final String MINUS = "-";
+    private static final String EQ = "=";
 
-    public Constraint convert(String guard, List<String> readVars, List<String> writeVars) throws DPNParserException {
+    public static Constraint convert(String guard, List<String> readVars, List<String> writeVars) throws DPNParserException {
         Constraint constraint = new Constraint();
         constraint.setRead(readVars);
         constraint.setWritten(writeVars);
@@ -32,7 +32,7 @@ public class GuardToConstraintConverter {
      * @return
      * @throws DPNParserException
      */
-    public List<Constraint> convertEquality(String guard, List<String> readVars, List<String> writeVars) throws DPNParserException {
+    public static List<Constraint> convertEquality(String guard, List<String> readVars, List<String> writeVars) throws DPNParserException {
         List<Constraint> result = new ArrayList<>();
         result.add(convert(String.join(LTE, guard.split(EQ)), readVars, writeVars));
         result.add(convert(String.join(GTE, guard.split(EQ)), readVars, writeVars));
@@ -40,7 +40,7 @@ public class GuardToConstraintConverter {
         return result;
     }
 
-    private void parseGuard(String guard, Constraint constraint) throws DPNParserException {
+    private static void parseGuard(String guard, Constraint constraint) throws DPNParserException {
         guard = guard.replaceAll("\\s+", "");
         if (guard.charAt(0) == '(' && guard.charAt(guard.length() - 1) == ')') {
             guard = guard.substring(1, guard.length() - 1);
@@ -115,13 +115,13 @@ public class GuardToConstraintConverter {
         }
     }
 
-    private boolean isVariable(String part) {
+    private static boolean isVariable(String part) {
         Pattern p = Pattern.compile("^[a-z][a-z0-9_]*$");
         Matcher m = p.matcher(part);
         return m.matches();
     }
 
-    private boolean isLeastToken(String token) {
+    private static boolean isLeastToken(String token) {
         return token.equals(LT) || token.equals(LTE);
     }
 }

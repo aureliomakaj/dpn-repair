@@ -8,7 +8,7 @@
          <name>
             <text/>
          </name>
-         <place id="n1">
+         <place id="p1">
             <name>
                <text>p1</text>
             </name>
@@ -18,7 +18,7 @@
                <dimension x="12.5" y="12.5"/>
             </graphics>
          </place>
-         <place id="n2">
+         <place id="p2">
             <name>
                <text>p2</text>
             </name>
@@ -28,7 +28,7 @@
                <dimension x="12.5" y="12.5"/>
             </graphics>
          </place>
-         <place id="n3">
+         <place id="p3">
             <name>
                <text>p3</text>
             </name>
@@ -38,7 +38,7 @@
                <dimension x="12.5" y="12.5"/>
             </graphics>
          </place>
-         <place id="n4">
+         <place id="p4">
             <name>
                <text>pl4</text>
             </name>
@@ -48,7 +48,7 @@
                <dimension x="12.5" y="12.5"/>
             </graphics>
          </place>
-         <transition guard="(a&gt;=5)" id="n5">
+         <transition guard="(a&gt;=5)" id="t1">
             <name>
                <text>t1</text>
             </name>
@@ -61,7 +61,7 @@
             </graphics>
             <writeVariable>a</writeVariable>
          </transition>
-         <transition guard="(a&lt;10)" id="n6">
+         <transition guard="(a&lt;10)" id="t3">
             <name>
                <text>t3</text>
             </name>
@@ -74,7 +74,7 @@
             </graphics>
             <readVariable>a</readVariable>
          </transition>
-         <transition guard="(a&gt;10)" id="n7">
+         <transition guard="(a&gt;10)" id="t2">
             <name>
                <text>t2</text>
             </name>
@@ -87,7 +87,7 @@
             </graphics>
             <readVariable>a</readVariable>
          </transition>
-         <transition guard="(b&lt;a)" id="n8">
+         <transition guard="(b&lt;a)" id="t4">
             <name>
                <text>t4</text>
             </name>
@@ -101,7 +101,7 @@
             <readVariable>a</readVariable>
             <readVariable>b</readVariable>
          </transition>
-         <arc id="arc9" source="n8" target="n4">
+         <arc id="arc9" source="t4" target="p4">
             <name>
                <text>1</text>
             </name>
@@ -110,7 +110,7 @@
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc10" source="n3" target="n8">
+         <arc id="arc10" source="p3" target="t4">
             <name>
                <text>1</text>
             </name>
@@ -119,7 +119,7 @@
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc11" source="n2" target="n6">
+         <arc id="arc11" source="p2" target="t3">
             <name>
                <text>1</text>
             </name>
@@ -128,7 +128,7 @@
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc12" source="n7" target="n3">
+         <arc id="arc12" source="t2" target="p3">
             <name>
                <text>1</text>
             </name>
@@ -137,7 +137,7 @@
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc13" source="n1" target="n5">
+         <arc id="arc13" source="p1" target="t1">
             <name>
                <text>1</text>
             </name>
@@ -146,7 +146,7 @@
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc14" source="n5" target="n2">
+         <arc id="arc14" source="t1" target="p2">
             <name>
                <text>1</text>
             </name>
@@ -155,7 +155,7 @@
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc15" source="n6" target="n3">
+         <arc id="arc15" source="t3" target="p3">
             <name>
                <text>1</text>
             </name>
@@ -164,7 +164,7 @@
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc16" source="n2" target="n7">
+         <arc id="arc16" source="p2" target="t2">
             <name>
                <text>1</text>
             </name>
@@ -176,32 +176,32 @@
       </page>
       <initialmarkings>
          <marking>
-            <place idref="n1">
+            <place idref="p1">
                <text>1</text>
             </place>
-            <place idref="n2">
+            <place idref="p2">
                <text>0</text>
             </place>
-            <place idref="n3">
+            <place idref="p3">
                <text>0</text>
             </place>
-            <place idref="n4">
+            <place idref="p4">
                <text>0</text>
             </place>
          </marking>
       </initialmarkings>
       <finalmarkings>
          <marking>
-            <place idref="n1">
+            <place idref="p1">
                <text>0</text>
             </place>
-            <place idref="n2">
+            <place idref="p2">
                <text>0</text>
             </place>
-            <place idref="n3">
+            <place idref="p3">
                <text>0</text>
             </place>
-            <place idref="n4">
+            <place idref="p4">
                <text>1</text>
             </place>
          </marking>
@@ -212,7 +212,7 @@
             <position x="0" y="0"/>
             <dimension x="50" y="50"/>
          </variable>
-         <variable minValue="0" initialValue="0" type="java.lang.Long">
+         <variable minValue="0" initialValue="10" type="java.lang.Long">
             <name><text>b</text></name>
             <position x="0" y="0"/>
             <dimension x="50" y="50"/>

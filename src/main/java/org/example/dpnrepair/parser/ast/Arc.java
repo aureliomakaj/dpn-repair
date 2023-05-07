@@ -6,6 +6,7 @@ public class Arc {
     private String source;
     private String target;
     private String arctype;
+    private boolean input = true; // true is input arc, false is output arc
 
     public String getId() {
         return id;
@@ -45,5 +46,13 @@ public class Arc {
 
     public void setArctype(String arctype) {
         this.arctype = arctype;
+    }
+
+    public boolean isInput() {
+        return input;
+    }
+
+    public void setInput(boolean input) {
+        this.input = input;
     }
 }
