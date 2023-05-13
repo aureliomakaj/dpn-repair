@@ -96,6 +96,13 @@ public class CanonicalFormUtilities {
         return new DifferenceConstraintSet(constraintSet, variables);
     }
 
+    /**
+     * Add a constraint and return the canonical form, if consistent, null otherwise
+     * @param constraintSet
+     * @param toBeAdd
+     * @param toBeAddVariables
+     * @return
+     */
     public static DifferenceConstraintSet addConstraint(DifferenceConstraintSet constraintSet, Constraint toBeAdd,
                                                         Map<String, Variable> toBeAddVariables) {
         if (toBeAdd.getRead().size() == 2) {

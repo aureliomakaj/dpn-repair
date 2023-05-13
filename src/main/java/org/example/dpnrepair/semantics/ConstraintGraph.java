@@ -6,6 +6,7 @@ import org.example.dpnrepair.parser.GuardToConstraintConverter;
 import org.example.dpnrepair.parser.ast.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ConstraintGraph {
     private int nodeCounter = 0;
@@ -24,6 +25,7 @@ public class ConstraintGraph {
     private void computeGraph(DPN dpn) {
         initialNode = computeInitialNode(dpn);
         nodes.add(initialNode);
+        visitDpn(dpn);
     }
 
     private void visitDpn(DPN dpn) {
@@ -31,7 +33,22 @@ public class ConstraintGraph {
         queue.add(initialNode);
         while (!queue.isEmpty()) {
             Node iter = queue.remove();
-
+            Marking inputMarking = iter.getMarking().clone();
+            for (Transition enabledTransition : getEnabledTransitions(dpn.getTransitions().values(), inputMarking)) {
+                if (enabledTransition.isEnabled(inputMarking)) {
+                    inputMarking.removeTokens(enabledTransition.getEnabling());
+                    Marking outputMarking = inputMarking.clone();
+                    outputMarking.addTokens(enabledTransition.getOutput());
+                    DifferenceConstraintSet newDiffSetCanonical = CanonicalFormUtilities.addConstraint(
+                            iter.getCanonicalForm(), enabledTransition.getGuard(), dpn.getVariables()
+                    );
+                    if(newDiffSetCanonical != null) {
+                        Node newNode = new Node(outputMarking, newDiffSetCanonical);
+                        queue.add(newNode);
+                        nodes.add(newNode);
+                    }
+                }
+            }
         }
     }
 
@@ -52,9 +69,22 @@ public class ConstraintGraph {
         return new Node(dpn.getInitialMarking(), initCanonicalForm);
     }
 
+    private List<Transition> getEnabledTransitions(Collection<Transition> transitions, Marking marking) {
+        return transitions.stream()
+                .filter(transition -> transition.isEnabled(marking))
+                .collect(Collectors.toList());
+    }
+
+    private Marking computeOutputMarking(Marking input, Transition transition) {
+        Marking m = input.clone();
+        for (Map.Entry<String, Integer> entry : transition.getEnabling().entrySet()) {
+
+        }
+        return m;
+    }
+
     class Node {
-        private int id;
-        private String place;
+        private final int id;
         private final Marking marking;
         private final DifferenceConstraintSet canonicalForm;
         private boolean visited = false;

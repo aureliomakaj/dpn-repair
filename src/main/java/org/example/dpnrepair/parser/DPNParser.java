@@ -53,7 +53,7 @@ public class DPNParser {
 
         addZed();
         checkConstraintVariables();
-        dpn.elaborateAdjacentList();
+        fillTransitionsWithArcs();
     }
 
     private void parseNet(Node net) throws DPNParserException {
@@ -101,11 +101,7 @@ public class DPNParser {
                         break;
                     case Tags.ARC:
                         Arc a = parseArc(n);
-                        if (a.isInput()) {
-                            dpn.addInputArc(a);
-                        } else {
-                            dpn.addOutputArc(a);
-                        }
+                        dpn.addArc(a);
                         break;
                 }
             }
@@ -266,7 +262,8 @@ public class DPNParser {
             Node n = arc.getChildNodes().item(i);
             if (isSupported(n)) {
                 if (isName(n)) {
-                    a.setName(parseTextName(n));
+                    String tokens = parseTextName(n);
+                    a.setTokens(Integer.parseInt(tokens));
                 } else if (Tags.ARC_TYPE.equals(n.getNodeName())) {
                     a.setArctype(n.getTextContent().trim().trim());
                 }
@@ -281,7 +278,7 @@ public class DPNParser {
 
         if (dpn.getPlaces().containsKey(sourceName)) {
             a.setInput(true);
-        } else if(dpn.getTransitions().containsKey(sourceName)) {
+        } else if (dpn.getTransitions().containsKey(sourceName)) {
             a.setInput(false);
         } else {
             throw new DPNParserException("\"" + sourceName + "\" in arc \"" + a.getName() + "\" isn't a valid place nor transition");
@@ -400,6 +397,19 @@ public class DPNParser {
             }
             if (!secondOk) {
                 throw new DPNParserException("Variable \"" + c.getSecond() + "\" is not defined for transition " + t.getId());
+            }
+        }
+    }
+
+    private void fillTransitionsWithArcs() {
+        for (Arc arc : dpn.getArcs()) {
+            Transition t = null;
+            if (arc.isInput()) {
+                t = dpn.getTransitions().get(arc.getTarget());
+                t.addEnabling(arc.getSource(), arc.getTokens());
+            }else {
+                t = dpn.getTransitions().get(arc.getSource());
+                t.addOutput(arc.getTarget(), arc.getTokens());
             }
         }
     }

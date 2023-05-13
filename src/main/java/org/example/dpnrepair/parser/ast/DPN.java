@@ -1,21 +1,22 @@
 package org.example.dpnrepair.parser.ast;
 
+import org.example.dpnrepair.EdgeType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DPN {
     private String id;
     private String name;
     private final Map<String, Place> places = new HashMap<>();
     private final Map<String, Transition> transitions = new HashMap<>();
-    private final List<Arc> inputArcs = new ArrayList<>();
-    private final List<Arc> outputArcs = new ArrayList<>();
+    private final List<Arc> arcs = new ArrayList<>();
     private Marking initialMarking;
     private Marking finalMarking;
     private final Map<String, Variable> variables = new HashMap<>();
-    private final Map<String, List<String[]>> adjacentList = new HashMap<>();
 
     public void setId(String id) {
         this.id = id;
@@ -49,15 +50,13 @@ public class DPN {
         }
     }
 
-    public void addInputArc(Arc arc) {
-        if (arc != null) {
-            this.inputArcs.add(arc);
-        }
+    public List<Arc> getArcs() {
+        return arcs;
     }
 
-    public void addOutputArc(Arc arc) {
+    public void addArc(Arc arc) {
         if (arc != null) {
-            this.outputArcs.add(arc);
+            this.arcs.add(arc);
         }
     }
 
@@ -84,29 +83,6 @@ public class DPN {
     public void addVariable(Variable variable) {
         if (variable != null) {
             this.variables.put(variable.getName(), variable);
-        }
-    }
-
-    public Map<String, List<String[]>> getAdjacentList() {
-        return adjacentList;
-    }
-
-    /**
-     * Build an adjacent list for the representation of the graph
-     */
-    public void elaborateAdjacentList() {
-        Map<String, List<String>> transToPlace = new HashMap<>();
-        for (Arc out : outputArcs) {
-            transToPlace.putIfAbsent(out.getSource(), new ArrayList<>());
-            transToPlace.get(out.getSource()).add(out.getTarget());
-        }
-        for (Arc in : inputArcs) {
-            adjacentList.putIfAbsent(in.getSource(), new ArrayList<>());
-            if (transToPlace.get(in.getTarget()) != null) {
-                for (String targetPlace : transToPlace.get(in.getTarget())) {
-                    adjacentList.get(in.getSource()).add(new String[]{targetPlace, in.getTarget()});
-                }
-            }
         }
     }
 

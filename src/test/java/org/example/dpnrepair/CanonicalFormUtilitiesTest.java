@@ -44,7 +44,9 @@ public class CanonicalFormUtilitiesTest {
 
     @Test
     void when_consistent_system_then_canonical_form() {
-        assertNotNull(CanonicalFormUtilities.getCanonicalForm(getDifferenceConstraintSetOne()));
+        DifferenceConstraintSet setOne = getDifferenceConstraintSetOne();
+        DifferenceConstraintSet output = CanonicalFormUtilities.getCanonicalForm(setOne);
+        assertNotNull(output);
     }
 
     @Test
