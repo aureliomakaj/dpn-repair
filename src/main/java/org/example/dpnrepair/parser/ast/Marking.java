@@ -3,13 +3,18 @@ package org.example.dpnrepair.parser.ast;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Marking implements Cloneable {
-    private final Map<String, Integer> placeTokenMap = new HashMap<>();
+    private Map<String, Integer> placeTokenMap = new HashMap<>();
 
     public Map<String, Integer> getPlaceTokenMap() {
         return placeTokenMap;
+    }
+
+    public void setPlaceTokenMap(Map<String, Integer> placeTokenMap) {
+        this.placeTokenMap = placeTokenMap;
     }
 
     public void addPlaceWithToken(String placeId, int tokenNumber) {
@@ -39,13 +44,27 @@ public class Marking implements Cloneable {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Marking marking = (Marking) o;
+        return Objects.equals(placeTokenMap, marking.placeTokenMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(placeTokenMap);
+    }
 
     @Override
     public Marking clone() {
-        Marking clone = new Marking();
-        for (String s : placeTokenMap.keySet()) {
-            clone.getPlaceTokenMap().put(s, placeTokenMap.get(s));
+        try {
+            Marking clone = (Marking) super.clone();
+            clone.setPlaceTokenMap(new HashMap<>(placeTokenMap));
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
         }
-        return clone;
     }
 }

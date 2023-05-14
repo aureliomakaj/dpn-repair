@@ -33,22 +33,52 @@ public class ConstraintGraph {
         queue.add(initialNode);
         while (!queue.isEmpty()) {
             Node iter = queue.remove();
-            Marking inputMarking = iter.getMarking().clone();
-            for (Transition enabledTransition : getEnabledTransitions(dpn.getTransitions().values(), inputMarking)) {
-                if (enabledTransition.isEnabled(inputMarking)) {
-                    inputMarking.removeTokens(enabledTransition.getEnabling());
-                    Marking outputMarking = inputMarking.clone();
-                    outputMarking.addTokens(enabledTransition.getOutput());
-                    DifferenceConstraintSet newDiffSetCanonical = CanonicalFormUtilities.addConstraint(
-                            iter.getCanonicalForm(), enabledTransition.getGuard(), dpn.getVariables()
+            for (Transition enabledTransition : getEnabledTransitions(dpn.getTransitions().values(), iter.getMarking())) {
+                Arc arc = new Arc();
+                arc.origin = iter.id;
+                arc.transition = enabledTransition.getId();
+                // Compute new marking
+                Marking nextMarking = iter.getMarking().clone();
+                nextMarking.removeTokens(enabledTransition.getEnabling());
+                nextMarking.addTokens(enabledTransition.getOutput());
+                // Guard holds
+                DifferenceConstraintSet newDiffSetCanonical = CanonicalFormUtilities.addConstraint(
+                        iter.getCanonicalForm(), enabledTransition.getGuard(), dpn.getVariables()
+                );
+
+                if(newDiffSetCanonical != null) {
+                    addNode(nextMarking, newDiffSetCanonical, arc, queue);
+                }
+
+                if(enabledTransition.getGuard().getWritten().size() == 0) {
+                    Arc silentArc = new Arc();
+                    silentArc.origin = iter.id;
+                    silentArc.transition = enabledTransition.getId();
+                    silentArc.silent = true;
+                    // Silent transition
+                    DifferenceConstraintSet silentSetCanonical = CanonicalFormUtilities.addConstraint(
+                            iter.getCanonicalForm(), enabledTransition.getGuard().getNegated(), dpn.getVariables()
                     );
-                    if(newDiffSetCanonical != null) {
-                        Node newNode = new Node(outputMarking, newDiffSetCanonical);
-                        queue.add(newNode);
-                        nodes.add(newNode);
+
+                    if(silentSetCanonical != null) {
+                        addNode(iter.getMarking().clone(), silentSetCanonical, silentArc, queue);
                     }
                 }
             }
+        }
+    }
+
+    private void addNode(Marking marking, DifferenceConstraintSet differenceConstraintSet, Arc arc, Queue<Node> queue) {
+        Node newNode = new Node(marking, differenceConstraintSet);
+        Optional<Node> optionalInserted = getIfAlreadyInserted(newNode);
+        if (optionalInserted.isPresent()) {
+            arc.destination = optionalInserted.get().id;
+            arcs.add(arc);
+        } else {
+            queue.add(newNode);
+            nodes.add(newNode);
+            arc.destination = newNode.id;
+            arcs.add(arc);
         }
     }
 
@@ -75,12 +105,8 @@ public class ConstraintGraph {
                 .collect(Collectors.toList());
     }
 
-    private Marking computeOutputMarking(Marking input, Transition transition) {
-        Marking m = input.clone();
-        for (Map.Entry<String, Integer> entry : transition.getEnabling().entrySet()) {
-
-        }
-        return m;
+    private Optional<Node> getIfAlreadyInserted(Node node) {
+        return nodes.stream().filter(n -> n.equals(node)).findFirst();
     }
 
     class Node {
@@ -88,6 +114,8 @@ public class ConstraintGraph {
         private final Marking marking;
         private final DifferenceConstraintSet canonicalForm;
         private boolean visited = false;
+        private boolean finalNode = false;
+        private boolean deadNode = false;
 
         public Node(Marking marking, DifferenceConstraintSet canonicalForm) {
             this.id = ++nodeCounter;
@@ -110,12 +138,26 @@ public class ConstraintGraph {
         public void setVisited(boolean visited) {
             this.visited = visited;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Node node = (Node) o;
+            return Objects.equals(marking, node.marking) && Objects.equals(canonicalForm, node.canonicalForm);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(marking, canonicalForm);
+        }
     }
 
     class Arc {
-        private Node origin;
-        private Transition t;
-        private Node destination;
+        private int origin;
+        private String transition;
+        private int destination;
+        private boolean silent = false;
         private EdgeType type;
     }
 

@@ -21,4 +21,17 @@ public class DifferenceConstraintSet {
     public Map<String, Variable> getVariables() {
         return variables;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DifferenceConstraintSet that = (DifferenceConstraintSet) o;
+        return Objects.equals(constraintSet, that.constraintSet) && Objects.equals(variables, that.variables);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(constraintSet, variables);
+    }
 }

@@ -1,6 +1,8 @@
 package org.example.dpnrepair.parser.ast;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Constraint implements Cloneable {
     public static final String ZED = "Z";
@@ -89,6 +91,17 @@ public class Constraint implements Cloneable {
         return res;
     }
 
+    public Constraint getNegated() {
+        Constraint c = new Constraint();
+        c.setFirst(this.second);
+        c.setSecond(this.first);
+        c.setStrict(!this.strict);
+        c.setValue(-this.value);
+        c.setRead(this.read);
+        c.setWritten(this.written);
+        return c;
+    }
+
     public boolean canCompareTo(Constraint other) {
         return (getFirst().equals(other.getFirst()) || getFirst().equals(other.getSecond())) &&
                 (getSecond().equals(other.getFirst()) || getSecond().equals(other.getSecond()));
@@ -115,9 +128,25 @@ public class Constraint implements Cloneable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Constraint that = (Constraint) o;
+        return strict == that.strict && value == that.value && Objects.equals(first, that.first) && Objects.equals(second, that.second) && Objects.equals(read, that.read) && Objects.equals(written, that.written);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(first, second, strict, value, read, written);
+    }
+
+    @Override
     public Constraint clone() {
         try {
-            return (Constraint) super.clone();
+            Constraint out = (Constraint) super.clone();
+            out.setRead(new ArrayList<>(this.read));
+            out.setWritten(new ArrayList<>(this.written));
+            return out;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
