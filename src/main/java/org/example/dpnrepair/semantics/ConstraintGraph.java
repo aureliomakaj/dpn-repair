@@ -8,17 +8,25 @@ import org.example.dpnrepair.parser.ast.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Class for representing the Constraint Graph of a DPN
+ */
 public class ConstraintGraph {
     private int nodeCounter = 0;
-    private List<Node> nodes;
+    private Set<Node> nodes;
     private Node initialNode;
-    private List<Arc> arcs;
+    private Set<Arc> arcs;
+
+    private boolean dataAwareSound = true;
+
+    private boolean unbounded = false;
+    private List<Integer> deadlocks = new ArrayList<>();
 
 
     public ConstraintGraph(DPN dpn) {
-        nodes = new ArrayList<>();
+        nodes = new HashSet<>();
         initialNode = null;
-        arcs = new ArrayList<>();
+        arcs = new HashSet<>();
         computeGraph(dpn);
     }
 
@@ -28,49 +36,79 @@ public class ConstraintGraph {
         visitDpn(dpn);
     }
 
+    /**
+     * Starting from the initial node, visit the DPN and check if it is
+     * data-aware sound
+     * @param dpn
+     */
     private void visitDpn(DPN dpn) {
+        // Nodes found but still to be expanded
         Queue<Node> queue = new ArrayDeque<>();
         queue.add(initialNode);
         while (!queue.isEmpty()) {
+            // Pick a node
             Node iter = queue.remove();
             for (Transition enabledTransition : getEnabledTransitions(dpn.getTransitions().values(), iter.getMarking())) {
                 Arc arc = new Arc();
                 arc.origin = iter.id;
                 arc.transition = enabledTransition.getId();
+
                 // Compute new marking
                 Marking nextMarking = iter.getMarking().clone();
                 nextMarking.removeTokens(enabledTransition.getEnabling());
                 nextMarking.addTokens(enabledTransition.getOutput());
-                // Guard holds
+
+                // Guard holds case
                 DifferenceConstraintSet newDiffSetCanonical = CanonicalFormUtilities.addConstraint(
                         iter.getCanonicalForm(), enabledTransition.getGuard(), dpn.getVariables()
                 );
 
-                if(newDiffSetCanonical != null) {
-                    addNode(nextMarking, newDiffSetCanonical, arc, queue);
+                // Proceed only if constraint graph is consistent.
+                if (newDiffSetCanonical != null) {
+                    // If still data-aware sound, check for unboundness
+                    if (dataAwareSound && isUnbounded(nextMarking, newDiffSetCanonical)) {
+                        // The net is unbounded
+                        unbounded = true;
+                        dataAwareSound = false;
+                    }
+                    // Add node and arc
+                    fillQueue(nextMarking, newDiffSetCanonical, arc, queue, dpn.getFinalMarking());
                 }
 
-                if(enabledTransition.getGuard().getWritten().size() == 0) {
+                // If transition doesn't write any variable
+                if (enabledTransition.getGuard().getWritten().size() == 0) {
+                    // Silent transition
                     Arc silentArc = new Arc();
                     silentArc.origin = iter.id;
                     silentArc.transition = enabledTransition.getId();
                     silentArc.silent = true;
-                    // Silent transition
+
+                    // Difference constraint set by using negated guard
                     DifferenceConstraintSet silentSetCanonical = CanonicalFormUtilities.addConstraint(
                             iter.getCanonicalForm(), enabledTransition.getGuard().getNegated(), dpn.getVariables()
                     );
 
-                    if(silentSetCanonical != null) {
-                        addNode(iter.getMarking().clone(), silentSetCanonical, silentArc, queue);
+                    // Proceed only if consistent
+                    if (silentSetCanonical != null) {
+                        fillQueue(iter.getMarking().clone(), silentSetCanonical, silentArc, queue, dpn.getFinalMarking());
                     }
                 }
             }
         }
+
+        findDeadlocks();
+        if (!deadlocks.isEmpty()) {
+            this.dataAwareSound = false;
+        }
     }
 
-    private void addNode(Marking marking, DifferenceConstraintSet differenceConstraintSet, Arc arc, Queue<Node> queue) {
+    private void fillQueue(Marking marking, DifferenceConstraintSet differenceConstraintSet, Arc arc, Queue<Node> queue,
+                           Marking finalMarking) {
         Node newNode = new Node(marking, differenceConstraintSet);
-        Optional<Node> optionalInserted = getIfAlreadyInserted(newNode);
+        if (marking.equals(finalMarking)) {
+            newNode.finalNode = true;
+        }
+        Optional<Node> optionalInserted = getAlreadyInserted(newNode);
         if (optionalInserted.isPresent()) {
             arc.destination = optionalInserted.get().id;
             arcs.add(arc);
@@ -87,7 +125,9 @@ public class ConstraintGraph {
         for (Variable v : dpn.getVariables().values()) {
             List<Constraint> assignment = null;
             try {
-                assignment = GuardToConstraintConverter.convertEquality(v.getName() + " = " + v.getInitialValue(), new ArrayList<>(), Arrays.asList(v.getName()));
+                assignment = GuardToConstraintConverter.convertEquality(
+                        v.getName() + " = " + v.getInitialValue(), new ArrayList<>(), Collections.singletonList(v.getName())
+                );
                 initialConstraintSet.addAll(assignment);
             } catch (DPNParserException e) {
                 // Hand made string, shouldn't reach this point
@@ -105,8 +145,36 @@ public class ConstraintGraph {
                 .collect(Collectors.toList());
     }
 
-    private Optional<Node> getIfAlreadyInserted(Node node) {
+    private Optional<Node> getAlreadyInserted(Node node) {
         return nodes.stream().filter(n -> n.equals(node)).findFirst();
+    }
+
+    //∃(M* ,C*) ∈ S s.t. m > M*  AND canonicalForm = C*
+    private boolean isUnbounded(Marking m, DifferenceConstraintSet canonicalForm) {
+        return nodes.stream()
+                .anyMatch(n -> m.greaterThan(n.getMarking()) && canonicalForm.equals(n.getCanonicalForm()));
+    }
+
+    private void findDeadlocks() {
+        Map<Integer, List<Arc>> outgoingArcsForNodes = new HashMap<>();
+        for (Arc a : arcs) {
+            outgoingArcsForNodes.putIfAbsent(a.origin, new ArrayList<>());
+            // Add only if arc is self pointing
+            if (a.origin != a.destination) {
+                outgoingArcsForNodes.get(a.origin).add(a);
+            }
+        }
+        this.deadlocks = outgoingArcsForNodes
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().isEmpty())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    public boolean isDataAwareSound() {
+
+        return false;
     }
 
     class Node {
@@ -158,7 +226,19 @@ public class ConstraintGraph {
         private String transition;
         private int destination;
         private boolean silent = false;
-        private EdgeType type;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Arc arc = (Arc) o;
+            return origin == arc.origin && destination == arc.destination && silent == arc.silent && Objects.equals(transition, arc.transition);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(origin, transition, destination, silent);
+        }
     }
 
     enum EdgeType {
