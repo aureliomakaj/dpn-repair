@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class DPN {
+public class DPN implements Cloneable {
     private String id;
     private String name;
     private final Map<String, Place> places = new HashMap<>();
-    private final Map<String, Transition> transitions = new HashMap<>();
+    private Map<String, Transition> transitions = new HashMap<>();
     private final List<Arc> arcs = new ArrayList<>();
     private Marking initialMarking;
     private Marking finalMarking;
@@ -86,4 +86,17 @@ public class DPN {
         }
     }
 
+    @Override
+    public DPN clone() {
+        try {
+            DPN cloned = (DPN) super.clone();
+            cloned.transitions = new HashMap<>();
+            for (Transition t: transitions.values()){
+                cloned.addTransition(t.clone());
+            }
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

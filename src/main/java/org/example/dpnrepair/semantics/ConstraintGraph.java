@@ -1,6 +1,7 @@
 package org.example.dpnrepair.semantics;
 
 import org.example.dpnrepair.CanonicalFormUtilities;
+import org.example.dpnrepair.DPNUtils;
 import org.example.dpnrepair.exceptions.DPNParserException;
 import org.example.dpnrepair.parser.GuardToConstraintConverter;
 import org.example.dpnrepair.parser.ast.*;
@@ -22,6 +23,57 @@ public class ConstraintGraph {
     private boolean unbounded = false;
     private List<Integer> deadlocks = new ArrayList<>();
 
+    public int getNodeCounter() {
+        return nodeCounter;
+    }
+
+    public Set<Node> getNodes() {
+        return nodes;
+    }
+
+    public Node getInitialNode() {
+        return initialNode;
+    }
+
+    public Set<Arc> getArcs() {
+        return arcs;
+    }
+
+    public boolean isUnbounded() {
+        return unbounded;
+    }
+
+    public List<Integer> getDeadlocks() {
+        return deadlocks;
+    }
+
+    public void setNodeCounter(int nodeCounter) {
+        this.nodeCounter = nodeCounter;
+    }
+
+    public void setNodes(Set<Node> nodes) {
+        this.nodes = nodes;
+    }
+
+    public void setInitialNode(Node initialNode) {
+        this.initialNode = initialNode;
+    }
+
+    public void setArcs(Set<Arc> arcs) {
+        this.arcs = arcs;
+    }
+
+    public void setDataAwareSound(boolean dataAwareSound) {
+        this.dataAwareSound = dataAwareSound;
+    }
+
+    public void setUnbounded(boolean unbounded) {
+        this.unbounded = unbounded;
+    }
+
+    public void setDeadlocks(List<Integer> deadlocks) {
+        this.deadlocks = deadlocks;
+    }
 
     public ConstraintGraph(DPN dpn) {
         nodes = new HashSet<>();
@@ -48,7 +100,8 @@ public class ConstraintGraph {
         while (!queue.isEmpty()) {
             // Pick a node
             Node iter = queue.remove();
-            for (Transition enabledTransition : getEnabledTransitions(dpn.getTransitions().values(), iter.getMarking())) {
+            List<Transition> enabledTransitions = DPNUtils.getEnabledTransitions(dpn.getTransitions().values(), iter.getMarking());
+            for (Transition enabledTransition : enabledTransitions) {
                 Arc arc = new Arc();
                 arc.origin = iter.id;
                 arc.transition = enabledTransition.getId();
@@ -139,12 +192,6 @@ public class ConstraintGraph {
         return new Node(dpn.getInitialMarking(), initCanonicalForm);
     }
 
-    private List<Transition> getEnabledTransitions(Collection<Transition> transitions, Marking marking) {
-        return transitions.stream()
-                .filter(transition -> transition.isEnabled(marking))
-                .collect(Collectors.toList());
-    }
-
     private Optional<Node> getAlreadyInserted(Node node) {
         return nodes.stream().filter(n -> n.equals(node)).findFirst();
     }
@@ -183,12 +230,14 @@ public class ConstraintGraph {
         private final DifferenceConstraintSet canonicalForm;
         private boolean visited = false;
         private boolean finalNode = false;
-        private boolean deadNode = false;
-
         public Node(Marking marking, DifferenceConstraintSet canonicalForm) {
             this.id = ++nodeCounter;
             this.marking = marking;
             this.canonicalForm = canonicalForm;
+        }
+
+        public int getId() {
+            return id;
         }
 
         public Marking getMarking() {

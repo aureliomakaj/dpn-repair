@@ -1,6 +1,6 @@
 package org.example.dpnrepair.parser.ast;
 
-public class Dimension {
+public class Dimension implements Cloneable {
     private float width;
     private float height;
 
@@ -18,5 +18,14 @@ public class Dimension {
 
     public void setHeight(float height) {
         this.height = height;
+    }
+
+    @Override
+    public Dimension clone() {
+        try {
+            return (Dimension) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

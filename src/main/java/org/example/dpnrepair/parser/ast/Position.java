@@ -1,6 +1,6 @@
 package org.example.dpnrepair.parser.ast;
 
-public class Position {
+public class Position implements Cloneable {
     private float x;
     private float y;
 
@@ -18,5 +18,14 @@ public class Position {
 
     public void setY(float y) {
         this.y = y;
+    }
+
+    @Override
+    public Position clone() {
+        try {
+            return (Position) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -1,6 +1,6 @@
 package org.example.dpnrepair.parser.ast;
 
-public class Graphics {
+public class Graphics implements Cloneable {
     private Position position;
     private Dimension dimension;
     private String fill; // Hex
@@ -27,5 +27,18 @@ public class Graphics {
 
     public void setFill(String fill) {
         this.fill = fill;
+    }
+
+    @Override
+    public Graphics clone() {
+        try {
+            Graphics cloned = (Graphics) super.clone();
+            cloned.setDimension(dimension.clone());
+            cloned.setFill(fill);
+            cloned.setPosition(position.clone());
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

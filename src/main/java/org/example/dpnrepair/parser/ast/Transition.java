@@ -3,15 +3,15 @@ package org.example.dpnrepair.parser.ast;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Transition {
+public class Transition implements Cloneable {
     private String id;
     private String name;
     private Constraint guard;
     private Graphics graphics;
     // Place -> Token map. What is required to fire the transition
-    private Map<String, Integer> enabling = new HashMap<>();
+    private final Map<String, Integer> enabling = new HashMap<>();
     // Place -> Token map. Output of transition
-    private Map<String, Integer> output = new HashMap<>();
+    private final Map<String, Integer> output = new HashMap<>();
 
     public String getId() {
         return id;
@@ -65,5 +65,16 @@ public class Transition {
         return enabling.entrySet()
                 .stream()
                 .allMatch( entry -> marking.getPlaceTokenMap().get(entry.getKey()) >= entry.getValue());
+    }
+
+    @Override
+    public Transition clone() {
+        try {
+             Transition cloned = (Transition) super.clone();
+             cloned.setGuard(guard.clone());
+             return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
