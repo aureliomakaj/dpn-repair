@@ -220,11 +220,10 @@ public class ConstraintGraph {
     }
 
     public boolean isDataAwareSound() {
-
-        return false;
+        return dataAwareSound;
     }
 
-    class Node {
+    public class Node {
         private final int id;
         private final Marking marking;
         private final DifferenceConstraintSet canonicalForm;
@@ -270,11 +269,27 @@ public class ConstraintGraph {
         }
     }
 
-    class Arc {
+    public class Arc {
         private int origin;
         private String transition;
         private int destination;
         private boolean silent = false;
+
+        public int getOrigin() {
+            return origin;
+        }
+
+        public String getTransition() {
+            return transition;
+        }
+
+        public int getDestination() {
+            return destination;
+        }
+
+        public boolean isSilent() {
+            return silent;
+        }
 
         @Override
         public boolean equals(Object o) {

@@ -1,6 +1,7 @@
 package org.example.dpnrepair.semantics;
 
 import org.example.dpnrepair.DPNUtils;
+import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.DPN;
 import org.example.dpnrepair.parser.ast.Transition;
 
@@ -28,7 +29,7 @@ public class DPNRepairAcyclic {
             if (cg.isDataAwareSound()) {
                 break;
             }
-
+            fixDead(net, cg);
         }
         this.repaired = net.dpn;
     }
@@ -51,14 +52,48 @@ public class DPNRepairAcyclic {
             ConstraintGraph.Node curr = nodeMap.get(nodeId);
             List<Transition> enabledTransitions = DPNUtils.getEnabledTransitions(net.dpn.getTransitions().values(), curr.getMarking());
             for (Transition enabledTransition : enabledTransitions) {
-                //
+                forwardRepair(net, enabledTransition, curr.getCanonicalForm());
+            }
+            List<Transition> previousTransitions = DPNUtils.getPreviousTransitions(
+                    net.dpn, cg, initial, curr
+            );
+            for (Transition t : previousTransitions) {
+                backwardRepair(net, t, curr.getCanonicalForm());
             }
         }
     }
 
     private void forwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
-        RepairDPN copy = new RepairDPN(net.dpn.clone());
+        RepairDPN copy = new RepairDPN(net.dpn.clone(), net.differentGuards);
+        Constraint guard = t.getGuard();
+        Optional<Constraint> guardUnderlyingNet = getConstraintFromDifferenceConstraintSet(guard, c);
+        if (guardUnderlyingNet.isPresent()) {
+            Transition t2 = copy.dpn.getTransitions().get(t.getId());
+            t2.setGuard(guardUnderlyingNet.get());
+            copy.differentGuards++;
+            updatePriorityQueue(copy);
+        }
+    }
 
+    private Optional<Constraint> getConstraintFromDifferenceConstraintSet(Constraint t, DifferenceConstraintSet c) {
+        return c.getConstraintSet()
+                .stream()
+                .filter(constr -> t.getFirst().equals(constr.getFirst()) && t.getSecond().equals(constr.getSecond()))
+                .findFirst();
+    }
+
+    private void backwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
+        RepairDPN copy = new RepairDPN(net.dpn.clone(), net.differentGuards);
+        Constraint guard = t.getGuard();
+        Optional<Constraint> guardUnderlyingNet = getConstraintFromDifferenceConstraintSet(guard, c);
+        if (guardUnderlyingNet.isPresent()) {
+            Constraint copyOfUnderlying = guardUnderlyingNet.get().clone();
+            copyOfUnderlying.setStrict(!guardUnderlyingNet.get().isStrict()); // Switch strictness
+            Transition t2 = copy.dpn.getTransitions().get(t.getId());
+            t2.setGuard(copyOfUnderlying);
+            copy.differentGuards++;
+            updatePriorityQueue(copy);
+        }
     }
 
     class RepairDPN {
@@ -68,6 +103,11 @@ public class DPNRepairAcyclic {
 
         public RepairDPN(DPN dpn) {
             this.dpn = dpn;
+        }
+
+        public RepairDPN(DPN dpn, int differentGuards) {
+            this.dpn = dpn;
+            this.differentGuards = differentGuards;
         }
     }
 }

@@ -10,8 +10,8 @@ public class Constraint implements Cloneable {
     private String second;
     private boolean strict = false;
     private long value;
-    private List<String> read;
-    private List<String> written;
+    private List<String> read = new ArrayList<>();
+    private List<String> written = new ArrayList<>();
 
     public String getFirst() {
         return first;
