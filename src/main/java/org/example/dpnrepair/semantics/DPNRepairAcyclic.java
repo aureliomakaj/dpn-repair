@@ -13,6 +13,7 @@ public class DPNRepairAcyclic {
     private DPN toRepair;
     private DPN repaired;
     PriorityQueue<RepairDPN> priorityQueue;
+    private int distance = 0;
 
 
     public DPNRepairAcyclic(DPN dpn) {
@@ -32,6 +33,7 @@ public class DPNRepairAcyclic {
             fixDead(net, cg);
         }
         this.repaired = net.dpn;
+        this.distance = net.differentGuards;
     }
 
     private void updatePriorityQueue(RepairDPN net) {
@@ -54,12 +56,12 @@ public class DPNRepairAcyclic {
             for (Transition enabledTransition : enabledTransitions) {
                 forwardRepair(net, enabledTransition, curr.getCanonicalForm());
             }
-            List<Transition> previousTransitions = DPNUtils.getPreviousTransitions(
+            /*Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(
                     net.dpn, cg, initial, curr
             );
             for (Transition t : previousTransitions) {
                 backwardRepair(net, t, curr.getCanonicalForm());
-            }
+            }*/
         }
     }
 

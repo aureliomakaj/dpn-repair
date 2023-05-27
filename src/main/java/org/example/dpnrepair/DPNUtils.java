@@ -5,9 +5,7 @@ import org.example.dpnrepair.parser.ast.Marking;
 import org.example.dpnrepair.parser.ast.Transition;
 import org.example.dpnrepair.semantics.ConstraintGraph;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DPNUtils {
@@ -20,23 +18,23 @@ public class DPNUtils {
     /**
      * Get the transitions in all paths (M_0, C_0) -> (M, C)
      */
-    public static List<Transition> getPreviousTransitions(
+    public static Set<Transition> getPreviousTransitions(
             DPN dpn, ConstraintGraph cg, ConstraintGraph.Node initial, ConstraintGraph.Node current
     ) {
 
-        List<ConstraintGraph.Arc> pool = cg.getArcs()
+        Set<ConstraintGraph.Arc> pool = cg.getArcs()
                 .stream()
-                .filter(arc -> arc.getDestination() == current.getId())
-                .collect(Collectors.toList());
+                .filter(arc -> arc.getDestination() == current.getId() && arc.getOrigin() != arc.getDestination())
+                .collect(Collectors.toSet());
 
-        List<Transition> result = new ArrayList<>();
+        Set<Transition> result = new HashSet<>();
         do {
-            List<ConstraintGraph.Arc> newPool = new ArrayList<>();
+            Set<ConstraintGraph.Arc> newPool = new HashSet<>();
             for (ConstraintGraph.Arc arc: pool) {
                 result.add(dpn.getTransitions().get(arc.getTransition()));
                 newPool.addAll(cg.getArcs()
                         .stream()
-                        .filter(item -> item.getDestination() == arc.getOrigin())
+                        .filter(item -> item.getDestination() == arc.getOrigin() && arc.getOrigin() != arc.getDestination())
                         .collect(Collectors.toList()));
             }
             pool = newPool;
