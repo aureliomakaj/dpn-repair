@@ -1,5 +1,6 @@
 package org.example.dpnrepair.semantics;
 
+import org.example.dpnrepair.ConstraintGraphPrinter;
 import org.example.dpnrepair.DPNUtils;
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.DPN;
@@ -28,6 +29,8 @@ public class DPNRepairAcyclic {
             net = priorityQueue.remove();
             ConstraintGraph cg = new ConstraintGraph(net.dpn);
             if (cg.isDataAwareSound()) {
+                ConstraintGraphPrinter a = new ConstraintGraphPrinter(cg);
+                a.writeRaw("solution");
                 break;
             }
             fixDead(net, cg);
@@ -38,6 +41,7 @@ public class DPNRepairAcyclic {
 
     private void updatePriorityQueue(RepairDPN net) {
         if (!net.visited) {
+            net.visited = true;
             priorityQueue.add(net);
         }
     }
@@ -56,41 +60,42 @@ public class DPNRepairAcyclic {
             for (Transition enabledTransition : enabledTransitions) {
                 forwardRepair(net, enabledTransition, curr.getCanonicalForm());
             }
-            /*Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(
+            Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(
                     net.dpn, cg, initial, curr
             );
             for (Transition t : previousTransitions) {
                 backwardRepair(net, t, curr.getCanonicalForm());
-            }*/
+            }
         }
     }
 
     private void forwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
         RepairDPN copy = new RepairDPN(net.dpn.clone(), net.differentGuards);
         Constraint guard = t.getGuard();
-        Optional<Constraint> guardUnderlyingNet = getConstraintFromDifferenceConstraintSet(guard, c);
-        if (guardUnderlyingNet.isPresent()) {
-            Transition t2 = copy.dpn.getTransitions().get(t.getId());
-            t2.setGuard(guardUnderlyingNet.get());
-            copy.differentGuards++;
-            updatePriorityQueue(copy);
-        }
+        Constraint guardUnderlyingNet = getConstraintFromDifferenceConstraintSet(guard.getFirst(), guard.getSecond(), c);
+        Transition t2 = copy.dpn.getTransitions().get(t.getId());
+        t2.setGuard(guardUnderlyingNet.clone());
+        copy.differentGuards++;
+        updatePriorityQueue(copy);
     }
 
-    private Optional<Constraint> getConstraintFromDifferenceConstraintSet(Constraint t, DifferenceConstraintSet c) {
-        return c.getConstraintSet()
+    private Constraint getConstraintFromDifferenceConstraintSet(String first, String second, DifferenceConstraintSet c) {
+        Optional<Constraint> constraint = c.getConstraintSet()
                 .stream()
-                .filter(constr -> t.getFirst().equals(constr.getFirst()) && t.getSecond().equals(constr.getSecond()))
+                .filter(constr -> first.equals(constr.getFirst()) && second.equals(constr.getSecond()))
                 .findFirst();
+
+        return constraint.orElse(new Constraint(first, second));
     }
 
     private void backwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
         RepairDPN copy = new RepairDPN(net.dpn.clone(), net.differentGuards);
         Constraint guard = t.getGuard();
-        Optional<Constraint> guardUnderlyingNet = getConstraintFromDifferenceConstraintSet(guard, c);
-        if (guardUnderlyingNet.isPresent()) {
-            Constraint copyOfUnderlying = guardUnderlyingNet.get().clone();
-            copyOfUnderlying.setStrict(!guardUnderlyingNet.get().isStrict()); // Switch strictness
+        Constraint guardUnderlyingNet = getConstraintFromDifferenceConstraintSet(guard.getFirst(), guard.getSecond(), c);
+        if (guardUnderlyingNet.getValue() != Long.MAX_VALUE) {
+            Constraint copyOfUnderlying = guardUnderlyingNet.clone();
+            copyOfUnderlying.setValue(-copyOfUnderlying.getValue()); // Negate value
+            copyOfUnderlying.setStrict(!guardUnderlyingNet.isStrict()); // Switch strictness
             Transition t2 = copy.dpn.getTransitions().get(t.getId());
             t2.setGuard(copyOfUnderlying);
             copy.differentGuards++;

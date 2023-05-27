@@ -13,6 +13,16 @@ public class Constraint implements Cloneable {
     private List<String> read = new ArrayList<>();
     private List<String> written = new ArrayList<>();
 
+    public Constraint() {}
+
+    public Constraint(String first, String second) {
+        this.first = first;
+        this.second = second;
+        value = Long.MAX_VALUE;
+        read.add(first);
+        read.add(second);
+    }
+
     public String getFirst() {
         return first;
     }
