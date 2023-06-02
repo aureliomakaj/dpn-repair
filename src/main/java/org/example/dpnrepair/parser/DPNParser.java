@@ -84,6 +84,14 @@ public class DPNParser {
         if (!parsedPage) {
             throw new DPNParserException("\"" + Tags.PAGE + "\" is missing");
         }
+
+        if(dpn.getInitialMarking() == null) {
+            throw new DPNParserException("\"" + Tags.INITIAL_MARKINGS + "\" is missing");
+        }
+
+        if(dpn.getFinalMarking() == null) {
+            throw new DPNParserException("\"" + Tags.FINAL_MARKINGS + "\" is missing");
+        }
     }
 
     private void parsePage(Node page) throws DPNParserException {

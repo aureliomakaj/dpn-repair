@@ -51,6 +51,16 @@ public class Constraint implements Cloneable {
         return value;
     }
 
+    public long getNegatedValue() {
+        if (value == Long.MAX_VALUE) {
+            return Long.MIN_VALUE;
+        } else if (value == Long.MIN_VALUE) {
+            return Long.MAX_VALUE;
+        } else {
+            return -value;
+        }
+    }
+
     public void setValue(long value) {
         this.value = value;
     }
@@ -88,7 +98,7 @@ public class Constraint implements Cloneable {
         if (first.equals(ZED)) {
             res += second;
             res += strict ? " > " : " >= ";
-            res += (-value);
+            res += this.getNegatedValue();
         } else if (second.equals(ZED)) {
             res += first;
             res += strict ? " < " : " <= ";
@@ -106,7 +116,7 @@ public class Constraint implements Cloneable {
         c.setFirst(this.second);
         c.setSecond(this.first);
         c.setStrict(!this.strict);
-        c.setValue(-this.value);
+        c.setValue(this.getNegatedValue());
         c.setRead(this.read);
         c.setWritten(this.written);
         return c;

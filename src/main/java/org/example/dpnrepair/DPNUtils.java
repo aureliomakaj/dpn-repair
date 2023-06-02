@@ -24,7 +24,7 @@ public class DPNUtils {
 
         Set<ConstraintGraph.Arc> pool = cg.getArcs()
                 .stream()
-                .filter(arc -> arc.getDestination() == current.getId() && arc.getOrigin() != arc.getDestination())
+                .filter(arc -> !arc.isSilent() && arc.getDestination() == current.getId() && arc.getOrigin() != arc.getDestination())
                 .collect(Collectors.toSet());
 
         Set<Transition> result = new HashSet<>();
@@ -34,7 +34,7 @@ public class DPNUtils {
                 result.add(dpn.getTransitions().get(arc.getTransition()));
                 newPool.addAll(cg.getArcs()
                         .stream()
-                        .filter(item -> item.getDestination() == arc.getOrigin() && arc.getOrigin() != arc.getDestination())
+                        .filter(item -> !item.isSilent() && item.getDestination() == arc.getOrigin() && arc.getOrigin() != arc.getDestination())
                         .collect(Collectors.toList()));
             }
             pool = newPool;

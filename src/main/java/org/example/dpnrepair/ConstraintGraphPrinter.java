@@ -127,11 +127,10 @@ public class ConstraintGraphPrinter {
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             writer.write(content.toString());
+            writer.close();
             System.out.println("Content written to the file successfully.");
         } catch (IOException e) {
             System.out.println("An error occurred while writing to the file: " + e.getMessage());
         }
-
-
     }
 }

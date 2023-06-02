@@ -153,6 +153,9 @@ public class ConstraintGraph {
         if (!deadlocks.isEmpty()) {
             this.dataAwareSound = false;
         }
+        if(this.dataAwareSound) {
+            this.dataAwareSound = !hasMissingTransitions(dpn);
+        }
     }
 
     private void fillQueue(Marking marking, DifferenceConstraintSet differenceConstraintSet, Arc arc, Queue<Node> queue,
@@ -221,6 +224,12 @@ public class ConstraintGraph {
 
     public boolean isDataAwareSound() {
         return dataAwareSound;
+    }
+
+    private boolean hasMissingTransitions(DPN dpn) {
+        Set<String> dpnTransitions = new HashSet<>(dpn.getTransitions().keySet());
+        Set<String> graphTransitions = arcs.stream().map(Arc::getTransition).collect(Collectors.toSet());
+        return !graphTransitions.containsAll(dpnTransitions);
     }
 
     public class Node {
