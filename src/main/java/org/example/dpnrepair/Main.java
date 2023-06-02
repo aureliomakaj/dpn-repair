@@ -30,7 +30,7 @@ public class Main {
 //        cgPrinter.writeRaw("figure-3-cg.txt");
         DPNRepairAcyclic dpnRepairAcyclic = new DPNRepairAcyclic(parser.getDpn());
         dpnRepairAcyclic.repair();
-        ConstraintGraph cg2 = new ConstraintGraph(dpnRepairAcyclic.getRepaired());
+//        ConstraintGraph cg2 = new ConstraintGraph(dpnRepairAcyclic.getRepaired());
         System.out.println("Finished");
     }
 }

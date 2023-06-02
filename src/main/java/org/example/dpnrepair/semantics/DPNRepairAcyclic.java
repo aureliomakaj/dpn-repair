@@ -3,7 +3,6 @@ package org.example.dpnrepair.semantics;
 import org.example.dpnrepair.ConstraintGraphPrinter;
 import org.example.dpnrepair.DPNPrinter;
 import org.example.dpnrepair.DPNUtils;
-import org.example.dpnrepair.parser.DPNParser;
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.DPN;
 import org.example.dpnrepair.parser.ast.Transition;
@@ -17,6 +16,8 @@ public class DPNRepairAcyclic {
     private DPN repaired;
     PriorityQueue<RepairDPN> priorityQueue;
     private int distance = 0;
+
+    private final Set<Set<String>> visitedDpn = new HashSet<>();
 
 
     public DPNRepairAcyclic(DPN dpn) {
@@ -37,6 +38,7 @@ public class DPNRepairAcyclic {
         RepairDPN net;
         while (true) {
             net = priorityQueue.remove();
+            setVisited(net.dpn);
             ConstraintGraph cg = new ConstraintGraph(net.dpn);
             if (cg.isDataAwareSound()) {
                 ConstraintGraphPrinter a = new ConstraintGraphPrinter(cg);
@@ -52,16 +54,32 @@ public class DPNRepairAcyclic {
         dpnPrinter.writeTransitions("solution_transitions.txt");
     }
 
+    /**
+     * In our algorithm, the only thing that can change between different DPNs
+     * are the guards of transitions, thus we base on that to see if a dpn
+     * has already been visited
+     */
+    private void setVisited(DPN dpn) {
+        visitedDpn.add(getDPNKey(dpn));
+    }
+
+    private Set<String> getDPNKey(DPN dpn) {
+        return dpn.getTransitions()
+                .values()
+                .stream()
+                .map(Transition::getGuard)
+                .map(Constraint::toString)
+                .collect(Collectors.toSet());
+    }
+
     private void updatePriorityQueue(RepairDPN net) {
-        if (!net.visited) {
-            net.visited = true;
+        if (!visitedDpn.contains(getDPNKey(net.dpn))) {
+//            net.visited = true;
             priorityQueue.add(net);
         }
     }
 
     private void fixDead(RepairDPN net, ConstraintGraph cg) {
-        ConstraintGraphPrinter a = new ConstraintGraphPrinter(cg);
-        a.writeRaw("cg_temp");
         ConstraintGraph.Node initial = cg.getInitialNode();
         Map<Integer, ConstraintGraph.Node> nodeMap = cg.getNodes()
                 .stream()
@@ -76,7 +94,7 @@ public class DPNRepairAcyclic {
                 forwardRepair(net, enabledTransition, curr.getCanonicalForm());
             }
             Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(
-                    net.dpn, cg, initial, curr
+                    net.dpn, cg, curr
             );
             for (Transition t : previousTransitions) {
                 backwardRepair(net, t, curr.getCanonicalForm());
@@ -137,11 +155,9 @@ public class DPNRepairAcyclic {
             List<ConstraintGraph.Node> nodes = getFiring(cg, missingTransition);
             for (ConstraintGraph.Node node : nodes) {
                 forwardRepair(net, missingTransition, node.getCanonicalForm());
-                Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(
-                        net.dpn, cg, initial, node
-                );
+                Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(net.dpn, cg, node);
                 for (Transition previousTransition : previousTransitions) {
-                    backForwardRepair(net, previousTransition, node.getCanonicalForm());
+                    backForwardRepair(net, previousTransition);
                 }
             }
         }
@@ -166,7 +182,7 @@ public class DPNRepairAcyclic {
                 .collect(Collectors.toList());
     }
 
-    private void backForwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
+    private void backForwardRepair(RepairDPN net, Transition t) {
         RepairDPN copy = makeCopy(net);
 
         Transition t2 = copy.dpn.getTransitions().get(t.getId());
@@ -181,7 +197,6 @@ public class DPNRepairAcyclic {
 
     static class RepairDPN {
         DPN dpn;
-        boolean visited = false;
         int changes = 0;
         Set<String> modifiedTransitions = new HashSet<>();
 
