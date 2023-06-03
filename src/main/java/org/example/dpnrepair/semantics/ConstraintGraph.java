@@ -91,6 +91,7 @@ public class ConstraintGraph {
     /**
      * Starting from the initial node, visit the DPN and check if it is
      * data-aware sound
+     *
      * @param dpn
      */
     private void visitDpn(DPN dpn) {
@@ -153,7 +154,7 @@ public class ConstraintGraph {
         if (!deadlocks.isEmpty()) {
             this.dataAwareSound = false;
         }
-        if(this.dataAwareSound) {
+        if (this.dataAwareSound) {
             this.dataAwareSound = !hasMissingTransitions(dpn);
         }
     }
@@ -179,7 +180,7 @@ public class ConstraintGraph {
     private Node computeInitialNode(DPN dpn) {
         Set<Constraint> initialConstraintSet = new HashSet<>();
         for (Variable v : dpn.getVariables().values()) {
-            List<Constraint> assignment = null;
+            List<Constraint> assignment;
             try {
                 assignment = GuardToConstraintConverter.convertEquality(
                         v.getName() + " = " + v.getInitialValue(), new ArrayList<>(), Collections.singletonList(v.getName())
@@ -228,7 +229,7 @@ public class ConstraintGraph {
 
     private boolean hasMissingTransitions(DPN dpn) {
         Set<String> dpnTransitions = new HashSet<>(dpn.getTransitions().keySet());
-        Set<String> graphTransitions = arcs.stream().map(Arc::getTransition).collect(Collectors.toSet());
+        Set<String> graphTransitions = arcs.stream().filter(arc -> !arc.isSilent()).map(Arc::getTransition).collect(Collectors.toSet());
         return !graphTransitions.containsAll(dpnTransitions);
     }
 
@@ -238,6 +239,7 @@ public class ConstraintGraph {
         private final DifferenceConstraintSet canonicalForm;
         private boolean visited = false;
         private boolean finalNode = false;
+
         public Node(Marking marking, DifferenceConstraintSet canonicalForm) {
             this.id = ++nodeCounter;
             this.marking = marking;

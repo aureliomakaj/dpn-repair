@@ -19,22 +19,22 @@ public class DPNUtils {
      * Get the transitions in all paths (M_0, C_0) -> (M, C)
      */
     public static Set<Transition> getPreviousTransitions(
-            DPN dpn, ConstraintGraph cg, ConstraintGraph.Node current
+            DPN dpn, ConstraintGraph cg, ConstraintGraph.Node current, boolean filterSilent
     ) {
 
         Set<ConstraintGraph.Arc> pool = cg.getArcs()
                 .stream()
-                .filter(arc -> arc.getDestination() == current.getId() && arc.getOrigin() != arc.getDestination())
+                .filter(arc -> (!filterSilent || !arc.isSilent()) && arc.getDestination() == current.getId() && arc.getOrigin() != arc.getDestination())
                 .collect(Collectors.toSet());
 
         Set<Transition> result = new HashSet<>();
         do {
             Set<ConstraintGraph.Arc> newPool = new HashSet<>();
-            for (ConstraintGraph.Arc arc: pool) {
+            for (ConstraintGraph.Arc arc : pool) {
                 result.add(dpn.getTransitions().get(arc.getTransition()));
                 newPool.addAll(cg.getArcs()
                         .stream()
-                        .filter(item -> item.getDestination() == arc.getOrigin() && arc.getOrigin() != arc.getDestination())
+                        .filter(item -> (!filterSilent || !arc.isSilent()) && item.getDestination() == arc.getOrigin() && arc.getOrigin() != arc.getDestination())
                         .collect(Collectors.toList()));
             }
             pool = newPool;

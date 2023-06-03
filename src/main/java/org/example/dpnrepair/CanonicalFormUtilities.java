@@ -236,7 +236,7 @@ public class CanonicalFormUtilities {
         }
 
         public OrderPair sum(OrderPair second) {
-            // MAX_VALUE is used as infinity, but if we add something to it, it is not valid
+            // MAX_VALUE is used as infinity,
             long sum = value == Long.MAX_VALUE || second.getValue() == Long.MAX_VALUE ? Long.MAX_VALUE : value + second.getValue();
             return new OrderPair(sum, Math.min(loose, second.getLoose()));
         }

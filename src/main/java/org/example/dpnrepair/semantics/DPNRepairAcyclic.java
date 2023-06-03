@@ -93,9 +93,7 @@ public class DPNRepairAcyclic {
             for (Transition enabledTransition : enabledTransitions) {
                 forwardRepair(net, enabledTransition, curr.getCanonicalForm());
             }
-            Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(
-                    net.dpn, cg, curr
-            );
+            Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(net.dpn, cg, curr, false);
             for (Transition t : previousTransitions) {
                 backwardRepair(net, t, curr.getCanonicalForm());
             }
@@ -155,7 +153,7 @@ public class DPNRepairAcyclic {
             List<ConstraintGraph.Node> nodes = getFiring(cg, missingTransition);
             for (ConstraintGraph.Node node : nodes) {
                 forwardRepair(net, missingTransition, node.getCanonicalForm());
-                Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(net.dpn, cg, node);
+                Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(net.dpn, cg, node, true);
                 for (Transition previousTransition : previousTransitions) {
                     backForwardRepair(net, previousTransition);
                 }
