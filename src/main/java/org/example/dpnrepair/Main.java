@@ -9,6 +9,7 @@ import org.example.dpnrepair.parser.ast.Graphics;
 import org.example.dpnrepair.parser.ast.Position;
 import org.example.dpnrepair.semantics.ConstraintGraph;
 import org.example.dpnrepair.semantics.DPNRepairAcyclic;
+import org.example.dpnrepair.semantics.DPNRepairCyclic;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,14 +23,17 @@ public class Main {
 
 //        String figure = "src/main/resources/figure1-dpn.pnml";
 //        String figure = "src/main/resources/figure-2-dpn.pnml";
-        String figure = "src/main/resources/figure-3-dpn.pnml";
+//        String figure = "src/main/resources/figure-3-dpn.pnml";
+        String figure = "src/main/resources/figure-4-dpn.pnml";
         DPNParser parser = new DPNParser(figure);
         parser.parse();
-        ConstraintGraph cg = new ConstraintGraph(parser.getDpn());
+//        ConstraintGraph cg = new ConstraintGraph(parser.getDpn());
 //        ConstraintGraphPrinter cgPrinter = new ConstraintGraphPrinter(cg);
 //        cgPrinter.writeRaw("figure-3-cg.txt");
-        DPNRepairAcyclic dpnRepairAcyclic = new DPNRepairAcyclic(parser.getDpn());
-        dpnRepairAcyclic.repair();
+//        DPNRepairAcyclic dpnRepairAcyclic = new DPNRepairAcyclic(parser.getDpn());
+//        dpnRepairAcyclic.repair();
+        DPNRepairCyclic dpnRepairCyclic = new DPNRepairCyclic(parser.getDpn());
+        dpnRepairCyclic.repair();
 //        ConstraintGraph cg2 = new ConstraintGraph(dpnRepairAcyclic.getRepaired());
         System.out.println("Finished");
     }

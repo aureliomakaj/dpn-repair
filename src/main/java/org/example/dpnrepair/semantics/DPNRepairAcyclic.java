@@ -12,12 +12,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DPNRepairAcyclic {
-    private final DPN toRepair;
-    private DPN repaired;
+    protected final DPN toRepair;
+    protected DPN repaired;
     PriorityQueue<RepairDPN> priorityQueue;
-    private int distance = 0;
+    protected int distance = 0;
 
-    private final Set<Set<String>> visitedDpn = new HashSet<>();
+    protected final Set<Set<String>> visitedDpn = new HashSet<>();
 
 
     public DPNRepairAcyclic(DPN dpn) {
@@ -59,11 +59,11 @@ public class DPNRepairAcyclic {
      * are the guards of transitions, thus we base on that to see if a dpn
      * has already been visited
      */
-    private void setVisited(DPN dpn) {
+    protected void setVisited(DPN dpn) {
         visitedDpn.add(getDPNKey(dpn));
     }
 
-    private Set<String> getDPNKey(DPN dpn) {
+    protected Set<String> getDPNKey(DPN dpn) {
         return dpn.getTransitions()
                 .values()
                 .stream()
@@ -72,14 +72,14 @@ public class DPNRepairAcyclic {
                 .collect(Collectors.toSet());
     }
 
-    private void updatePriorityQueue(RepairDPN net) {
+    protected void updatePriorityQueue(RepairDPN net) {
         if (!visitedDpn.contains(getDPNKey(net.dpn))) {
 //            net.visited = true;
             priorityQueue.add(net);
         }
     }
 
-    private void fixDead(RepairDPN net, ConstraintGraph cg) {
+    protected void fixDead(RepairDPN net, ConstraintGraph cg) {
         ConstraintGraph.Node initial = cg.getInitialNode();
         Map<Integer, ConstraintGraph.Node> nodeMap = cg.getNodes()
                 .stream()
@@ -100,7 +100,7 @@ public class DPNRepairAcyclic {
         }
     }
 
-    private void forwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
+    protected void forwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
         RepairDPN copy = makeCopy(net);
 
         Constraint guard = t.getGuard();
@@ -112,14 +112,14 @@ public class DPNRepairAcyclic {
         updatePriorityQueue(copy);
     }
 
-    private RepairDPN makeCopy(RepairDPN net) {
+    protected RepairDPN makeCopy(RepairDPN net) {
         RepairDPN copy = new RepairDPN(net.dpn.clone());
         copy.modifiedTransitions = new HashSet<>(net.modifiedTransitions);
         copy.changes = net.changes;
         return copy;
     }
 
-    private Constraint getConstraintFromDifferenceConstraintSet(String first, String second, DifferenceConstraintSet c) {
+    protected Constraint getConstraintFromDifferenceConstraintSet(String first, String second, DifferenceConstraintSet c) {
         Optional<Constraint> constraint = c.getConstraintSet()
                 .stream()
                 .filter(constr -> first.equals(constr.getFirst()) && second.equals(constr.getSecond()))
@@ -128,7 +128,7 @@ public class DPNRepairAcyclic {
         return constraint.orElse(new Constraint(first, second));
     }
 
-    private void backwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
+    protected void backwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
         RepairDPN copy = makeCopy(net);
 
         Constraint guard = t.getGuard();
@@ -145,7 +145,7 @@ public class DPNRepairAcyclic {
         }
     }
 
-    private void fixMissing(RepairDPN net, ConstraintGraph cg) {
+    protected void fixMissing(RepairDPN net, ConstraintGraph cg) {
         ConstraintGraph.Node initial = cg.getInitialNode();
         Set<String> missingTransitions = getMissingTransitions(net.dpn, cg);
         for (String t : missingTransitions) {
@@ -161,7 +161,7 @@ public class DPNRepairAcyclic {
         }
     }
 
-    private Set<String> getMissingTransitions(DPN dpn, ConstraintGraph cg) {
+    protected Set<String> getMissingTransitions(DPN dpn, ConstraintGraph cg) {
         Set<String> currentTransitions = cg.getArcs()
                 .stream()
                 .filter(arc -> !arc.isSilent())
@@ -173,14 +173,14 @@ public class DPNRepairAcyclic {
         return transitions;
     }
 
-    private List<ConstraintGraph.Node> getFiring(ConstraintGraph cg, Transition transition) {
+    protected List<ConstraintGraph.Node> getFiring(ConstraintGraph cg, Transition transition) {
         return cg.getNodes()
                 .stream()
                 .filter(node -> transition.isEnabled(node.getMarking()))
                 .collect(Collectors.toList());
     }
 
-    private void backForwardRepair(RepairDPN net, Transition t) {
+    protected void backForwardRepair(RepairDPN net, Transition t) {
         RepairDPN copy = makeCopy(net);
 
         Transition t2 = copy.dpn.getTransitions().get(t.getId());

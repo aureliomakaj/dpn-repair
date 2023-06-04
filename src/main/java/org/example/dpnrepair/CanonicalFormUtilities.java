@@ -25,7 +25,10 @@ public class CanonicalFormUtilities {
                 .boxed()
                 .collect(Collectors.toMap(i -> vars[i], Function.identity()));
 
-        fillFromConstraints(differenceConstraintSet.getConstraintSet(), diffMatrix, varsToInt);
+        boolean ok = fillFromConstraints(differenceConstraintSet.getConstraintSet(), diffMatrix, varsToInt);
+        if (!ok) {
+            return null;
+        }
         applyFloydWarshall(diffMatrix, varSize);
         if (checkConsistency(diffMatrix, varSize)) {
             return diffMatrixToConstraintSet(diffMatrix, vars, differenceConstraintSet.getVariables());
@@ -47,14 +50,18 @@ public class CanonicalFormUtilities {
         return diffMatrix;
     }
 
-    private static void fillFromConstraints(Set<Constraint> constraintSet, OrderPair[][] diffMatrix, Map<String, Integer> varsToInt) {
+    private static boolean fillFromConstraints(Set<Constraint> constraintSet, OrderPair[][] diffMatrix, Map<String, Integer> varsToInt) {
         for (Constraint c : constraintSet) {
             OrderPair inMatrix = diffMatrix[varsToInt.get(c.getFirst())][varsToInt.get(c.getSecond())];
             OrderPair current = new OrderPair(c.getValue(), c.isStrict() ? 0 : 1);
+            if (current.getValue() == Long.MIN_VALUE) {
+                return false;
+            }
             if (current.isLessThan(inMatrix)) {
                 diffMatrix[varsToInt.get(c.getFirst())][varsToInt.get(c.getSecond())] = current;
             }
         }
+        return true;
     }
 
     private static void applyFloydWarshall(OrderPair[][] diffMatrix, int varSize) {
@@ -236,7 +243,7 @@ public class CanonicalFormUtilities {
         }
 
         public OrderPair sum(OrderPair second) {
-            // MAX_VALUE is used as infinity,
+            // MAX_VALUE is used as infinity
             long sum = value == Long.MAX_VALUE || second.getValue() == Long.MAX_VALUE ? Long.MAX_VALUE : value + second.getValue();
             return new OrderPair(sum, Math.min(loose, second.getLoose()));
         }
