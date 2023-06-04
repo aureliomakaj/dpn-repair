@@ -15,10 +15,10 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
 
         Constraint guard = t.getGuard();
         Constraint guardUnderlyingNet = getConstraintFromDifferenceConstraintSet(guard.getFirst(), guard.getSecond(), c);
-        if (guardUnderlyingNet.getValue() == 0) {
+        if (guardUnderlyingNet.isStrict() && guardUnderlyingNet.getValue() == 0) {
             Transition t1 = firstCopy.dpn.getTransitions().get(t.getId());
             t1.setGuard(guardUnderlyingNet.clone());
-            if (guard.getValue() != guardUnderlyingNet.getValue()) {
+            if (guard.isStrict() != guardUnderlyingNet.isStrict() && guard.getValue() != guardUnderlyingNet.getValue() ) {
                 firstCopy.modifiedTransitions.add(t.getId());
                 firstCopy.changes++;
             }

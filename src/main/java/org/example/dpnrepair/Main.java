@@ -21,10 +21,10 @@ import java.util.Objects;
 public class Main {
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, DPNParserException, TransformerException {
 
-//        String figure = "src/main/resources/figure1-dpn.pnml";
+        String figure = "src/main/resources/figure1-dpn.pnml";
 //        String figure = "src/main/resources/figure-2-dpn.pnml";
 //        String figure = "src/main/resources/figure-3-dpn.pnml";
-        String figure = "src/main/resources/figure-4-dpn.pnml";
+//        String figure = "src/main/resources/figure-4-dpn.pnml";
         DPNParser parser = new DPNParser(figure);
         parser.parse();
 //        ConstraintGraph cg = new ConstraintGraph(parser.getDpn());
@@ -34,7 +34,7 @@ public class Main {
 //        dpnRepairAcyclic.repair();
         DPNRepairCyclic dpnRepairCyclic = new DPNRepairCyclic(parser.getDpn());
         dpnRepairCyclic.repair();
-//        ConstraintGraph cg2 = new ConstraintGraph(dpnRepairAcyclic.getRepaired());
+        ConstraintGraph cg2 = new ConstraintGraph(dpnRepairCyclic.getRepaired());
         System.out.println("Finished");
     }
 }
