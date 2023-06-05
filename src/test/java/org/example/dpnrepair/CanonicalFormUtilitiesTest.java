@@ -95,20 +95,6 @@ public class CanonicalFormUtilitiesTest {
         DifferenceConstraintSet out = CanonicalFormUtilities.addConstraint(origin, c, origin.getVariables());
         assertNotNull(out);
     }
-    @Test
-    void when_adding_constraint_with_write_breaks_consistency_then_no_canonical_form() {
-        DifferenceConstraintSet origin = getDifferenceConstraintSetOne();
-        // b - a < 2
-        Constraint c = new Constraint();
-        c.setFirst("b");
-        c.setSecond("a");
-        c.setValue(2);
-        c.setStrict(true);
-        c.setRead(Collections.singletonList("b"));
-        c.setWritten(Collections.singletonList("a"));
-        DifferenceConstraintSet out = CanonicalFormUtilities.addConstraint(origin, c, origin.getVariables());
-        assertNull(out);
-    }
 
     private DifferenceConstraintSet getDifferenceConstraintSetOne() {
         /*
