@@ -96,6 +96,8 @@ public class CanonicalFormUtilities {
                     c.setSecond(intToVar[j]);
                     c.setValue(pair.getValue());
                     c.setStrict(pair.getLoose() == 0);
+                    c.addRead(c.getFirst());
+                    c.addRead(c.getSecond());
                     constraintSet.add(c);
                 }
             }
@@ -105,10 +107,6 @@ public class CanonicalFormUtilities {
 
     /**
      * Add a constraint and return the canonical form, if consistent, null otherwise
-     * @param constraintSet
-     * @param toBeAdd
-     * @param toBeAddVariables
-     * @return
      */
     public static DifferenceConstraintSet addConstraint(DifferenceConstraintSet constraintSet, Constraint toBeAdd,
                                                         Map<String, Variable> toBeAddVariables) {
