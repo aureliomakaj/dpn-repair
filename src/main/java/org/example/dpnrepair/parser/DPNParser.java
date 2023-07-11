@@ -347,7 +347,7 @@ public class DPNParser {
             Node n = variable.getChildNodes().item(i);
             if (isSupported(n)) {
                 if (isName(n)) {
-                    String name = parseTextName(n);
+                    String name = n.getTextContent();
                     if (!isValidVariableName(name)) {
                         throw new DPNParserException("Invalid name for variable " + name);
                     }

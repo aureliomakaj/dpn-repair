@@ -54,6 +54,15 @@ public class Marking implements Cloneable {
         return greaterThanOrEqual(other) && placeTokenMap.entrySet().stream().anyMatch(entry -> entry.getValue() > other.getPlaceTokenMap().get(entry.getKey()));
     }
 
+    public String getPlaceStringRepresentation() {
+        return this.getPlaceTokenMap()
+                .entrySet()
+                .stream()
+                .filter(e -> e.getValue() != 0)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.joining(", "));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

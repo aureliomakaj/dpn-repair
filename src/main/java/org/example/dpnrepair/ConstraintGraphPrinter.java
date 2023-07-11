@@ -25,7 +25,7 @@ public class ConstraintGraphPrinter {
         this.cg = cg;
     }
 
-    public void writeToXML(String filename) throws ParserConfigurationException, IOException, TransformerException {
+    public void writeToXML(String filename, boolean withCanonicalForm) throws ParserConfigurationException, IOException, TransformerException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
@@ -37,10 +37,17 @@ public class ConstraintGraphPrinter {
         rootElement.setAttribute("xsi:schemaLocation", "http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd");
         doc.appendChild(rootElement);
 
+        Element nodeKey = doc.createElement("key");
+        nodeKey.setAttribute("id", "node_key");
+        nodeKey.setAttribute("for", "node");
+        nodeKey.setAttribute("attr.type", "string");
+        nodeKey.setAttribute("attr.name", "label");
+        rootElement.appendChild(nodeKey);
+
         Element edgeKey = doc.createElement("key");
         edgeKey.setAttribute("id", "edge_key");
         edgeKey.setAttribute("for", "edge");
-        edgeKey.setAttribute("attr.name", "weight");
+//        edgeKey.setAttribute("attr.name", "weight");
         edgeKey.setAttribute("attr.type", "string");
         rootElement.appendChild(edgeKey);
 
@@ -49,14 +56,23 @@ public class ConstraintGraphPrinter {
         graph.setAttribute("edgedefault", "directed");
         rootElement.appendChild(graph);
 
+        Map<Integer, String> nodePlaceStr = cg.getNodes().stream().collect(Collectors.toMap(ConstraintGraph.Node::getId, node -> node.getMarking().getPlaceStringRepresentation()));
+
         for (ConstraintGraph.Node node: cg.getNodes()) {
             Element nodeElement = doc.createElement("node");
             nodeElement.setAttribute("id", String.valueOf(node.getId()));
-            String content = node.getMarking().getPlaceTokenMap().entrySet().stream().filter(e -> e.getValue() != 0).map(Map.Entry::getKey).collect(Collectors.joining(", "));
-            for (Constraint c: node.getCanonicalForm().getConstraintSet()) {
-                content = content.concat("\n").concat(c.toString());
-            }
-            nodeElement.setTextContent(content);
+
+            Element subElement = doc.createElement("data");
+            subElement.setAttribute("key", "node_key");
+            subElement.setTextContent(nodePlaceStr.get(node.getId()));
+            nodeElement.appendChild(subElement);
+//            if(withCanonicalForm){
+//                String content = node.getMarking().getPlaceTokenMap().entrySet().stream().filter(e -> e.getValue() != 0).map(Map.Entry::getKey).collect(Collectors.joining(", "));
+//                for (Constraint c: node.getCanonicalForm().getConstraintSet()) {
+//                    content = content.concat("\n").concat(c.toString());
+//                }
+//                nodeElement.setTextContent(content);
+//            }
             graph.appendChild(nodeElement);
         }
 
@@ -109,12 +125,7 @@ public class ConstraintGraphPrinter {
             content.append(separator);
             String markingStr = node
                     .getMarking()
-                    .getPlaceTokenMap()
-                    .entrySet()
-                    .stream()
-                    .filter(e -> e.getValue() != 0)
-                    .map(Map.Entry::getKey)
-                    .collect(Collectors.joining(", "));
+                    .getPlaceStringRepresentation();
 
             content.append("NodeId ").append(node.getId()).append("\n");
             content.append("Marking ").append(markingStr).append("\n");

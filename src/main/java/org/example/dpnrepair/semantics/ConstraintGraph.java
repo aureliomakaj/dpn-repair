@@ -98,11 +98,16 @@ public class ConstraintGraph {
         // Nodes found but still to be expanded
         Queue<Node> queue = new ArrayDeque<>();
         queue.add(initialNode);
+        Set<String> transitionsDone = new HashSet<>();
         while (!queue.isEmpty()) {
             // Pick a node
             Node iter = queue.remove();
             List<Transition> enabledTransitions = DPNUtils.getEnabledTransitions(dpn.getTransitions().values(), iter.getMarking());
             for (Transition enabledTransition : enabledTransitions) {
+                if(transitionsDone.contains(enabledTransition.getId())){
+                    continue;
+                }
+                transitionsDone.add(enabledTransition.getId());
                 Arc arc = new Arc();
                 arc.origin = iter.id;
                 arc.transition = enabledTransition.getId();
