@@ -27,7 +27,7 @@ public class DifferenceConstraintSet {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DifferenceConstraintSet that = (DifferenceConstraintSet) o;
-        return Objects.equals(constraintSet, that.constraintSet) && Objects.equals(variables, that.variables);
+        return Objects.equals(constraintSet, that.constraintSet) && variables.keySet().equals(that.variables.keySet());
     }
 
     @Override
