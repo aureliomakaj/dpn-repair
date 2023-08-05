@@ -29,7 +29,8 @@ public class Main {
 //        String figure = "src/main/resources/wf-1-deadlock-free-dpn.pnml";
 //        String figure = "src/main/resources/wf-2-miss-trans-dpn.pnml";
 //        String figure = "src/main/resources/wf-3-deadlock-dpn.pnml";
-        String figure = "src/main/resources/img-prof-1-dpn.pnml";
+//        String figure = "src/main/resources/img-prof-1-dpn.pnml";
+        String figure = "src/main/resources/img-prof-no-ciclo-dpn.pnml";
         DPNParser parser = new DPNParser(figure);
         parser.parse();
 //        System.out.println("HAS CYCLES: " + DPNUtils.hasCycles(parser.getDpn()));

@@ -12,7 +12,7 @@
             <name>
                <text>p1</text>
             </name>
-            <toolspecific localNodeID="3afae772-0e73-4f76-a0c7-857313d80f41" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="ad142008-2703-4a2c-985b-b6d49da14b1f" tool="ProM" version="6.4"/>
             <graphics>
                <position x="11.25" y="11.25"/>
                <dimension x="12.5" y="12.5"/>
@@ -22,7 +22,7 @@
             <name>
                <text>p2</text>
             </name>
-            <toolspecific localNodeID="8b4fef65-85f8-432e-ba87-765a1d73c6af" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="34979ec3-b35f-4484-8d99-89b01a810fcd" tool="ProM" version="6.4"/>
             <graphics>
                <position x="11.25" y="11.25"/>
                <dimension x="12.5" y="12.5"/>
@@ -32,7 +32,17 @@
             <name>
                <text>p3</text>
             </name>
-            <toolspecific localNodeID="20fb3330-b164-4648-a828-3895d9a62945" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="7c466d96-fa67-4b9e-a4f2-2b106aa7c867" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p4">
+            <name>
+               <text>p4</text>
+            </name>
+            <toolspecific localNodeID="fbd593d0-4393-4081-9bf3-b61736369b2b" tool="ProM" version="6.4"/>
             <graphics>
                <position x="11.25" y="11.25"/>
                <dimension x="12.5" y="12.5"/>
@@ -42,7 +52,7 @@
             <name>
                <text>t1</text>
             </name>
-            <toolspecific activity="t1" localNodeID="c21af70b-30b1-4874-8563-ce0f865ee2a5" tool="ProM"
+            <toolspecific activity="t1" localNodeID="2ed35f9a-ad49-4064-a11a-5f4b8db283e1" tool="ProM"
                           version="6.4"/>
             <graphics>
                <position x="17.5" y="15.0"/>
@@ -55,7 +65,7 @@
             <name>
                <text>t2</text>
             </name>
-            <toolspecific activity="t2" localNodeID="b771e550-eb28-4fd3-87ba-6cc6c597a078" tool="ProM"
+            <toolspecific activity="t2" localNodeID="483f19f4-d94c-42ae-80ef-ae1ec316e113" tool="ProM"
                           version="6.4"/>
             <graphics>
                <position x="17.5" y="15.0"/>
@@ -69,7 +79,7 @@
             <name>
                <text>t3</text>
             </name>
-            <toolspecific activity="t3" localNodeID="2d3a2d03-3ea5-4755-ac52-e6a555360d73" tool="ProM"
+            <toolspecific activity="t3" localNodeID="3c15ee51-1d6b-4f61-81f0-538e924efcc9" tool="ProM"
                           version="6.4"/>
             <graphics>
                <position x="17.5" y="15.0"/>
@@ -78,56 +88,56 @@
             </graphics>
             <readVariable>y</readVariable>
          </transition>
-         <arc id="arc7" source="p2" target="t3">
+         <arc id="arc8" source="t2" target="p3">
             <name>
                <text>1</text>
             </name>
-            <toolspecific localNodeID="d8764d4a-bf43-46e6-a0aa-f403737fb4c3" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="3f5bc667-3c9c-44a9-a4af-e1d1e6135b1a" tool="ProM" version="6.4"/>
             <arctype>
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc8" source="p2" target="t2">
+         <arc id="arc9" source="t3" target="p4">
             <name>
                <text>1</text>
             </name>
-            <toolspecific localNodeID="7b13342f-47a0-4e2a-a280-e177f1bc5553" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="52c155e3-80c5-4bea-9ceb-49a5f9482dc5" tool="ProM" version="6.4"/>
             <arctype>
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc9" source="t1" target="p2">
+         <arc id="arc10" source="t1" target="p2">
             <name>
                <text>1</text>
             </name>
-            <toolspecific localNodeID="db42e352-bfc8-4935-aec8-e4a1d3964056" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="e6e8dab0-35e7-4b04-8292-723a728678d7" tool="ProM" version="6.4"/>
             <arctype>
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc10" source="t2" target="p2">
+         <arc id="arc11" source="p1" target="t1">
             <name>
                <text>1</text>
             </name>
-            <toolspecific localNodeID="0d70d843-4cf7-451d-964b-56e1d1ec8652" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="7338708f-8705-4135-832b-50dea61ad870" tool="ProM" version="6.4"/>
             <arctype>
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc11" source="t3" target="p3">
+         <arc id="arc12" source="p3" target="t3">
             <name>
                <text>1</text>
             </name>
-            <toolspecific localNodeID="b20520fc-582a-4b8a-8b83-85bac3163f13" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="53cdcfce-2ef2-4af4-92f8-92d5bf7f48da" tool="ProM" version="6.4"/>
             <arctype>
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc12" source="p1" target="t1">
+         <arc id="arc13" source="p2" target="t2">
             <name>
                <text>1</text>
             </name>
-            <toolspecific localNodeID="91e8c0f5-534d-4597-992f-04846024fa2e" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="72a3bbbe-8f2c-413b-945e-a7203428b190" tool="ProM" version="6.4"/>
             <arctype>
                <text>normal</text>
             </arctype>
@@ -144,6 +154,9 @@
             <place idref="p3">
                <text>0</text>
             </place>
+            <place idref="p4">
+               <text>0</text>
+            </place>
          </marking>
       </initialmarkings>
       <finalmarkings>
@@ -155,17 +168,20 @@
                <text>0</text>
             </place>
             <place idref="p3">
+               <text>0</text>
+            </place>
+            <place idref="p4">
                <text>1</text>
             </place>
          </marking>
       </finalmarkings>
       <variables>
-         <variable initialValue="10" type="java.lang.Long">
+         <variable initialValue="0" type="java.lang.Long">
             <name>x</name>
             <position x="0" y="0"/>
             <dimension height="50" width="50"/>
          </variable>
-         <variable initialValue="10"  type="java.lang.Long">
+         <variable initialValue="0"  type="java.lang.Long">
             <name>y</name>
             <position x="0" y="0"/>
             <dimension height="50" width="50"/>

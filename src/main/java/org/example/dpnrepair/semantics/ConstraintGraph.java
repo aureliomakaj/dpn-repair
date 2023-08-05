@@ -266,6 +266,8 @@ public class ConstraintGraph {
             this.visited = visited;
         }
 
+        public boolean isFinal() { return finalNode; }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
