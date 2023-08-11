@@ -1,5 +1,7 @@
 package org.example.dpnrepair.parser.ast;
 
+import java.util.Objects;
+
 public class Variable implements Cloneable{
     private String name;
     private long minValue;
@@ -45,6 +47,19 @@ public class Variable implements Cloneable{
 
     public void setGraphics(Graphics graphics) {
         this.graphics = graphics;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Variable variable = (Variable) o;
+        return Objects.equals(name, variable.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     public Variable clone() {

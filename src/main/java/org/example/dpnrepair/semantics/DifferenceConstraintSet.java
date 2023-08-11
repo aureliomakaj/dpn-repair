@@ -5,9 +5,9 @@ import org.example.dpnrepair.parser.ast.Variable;
 
 import java.util.*;
 
-public class DifferenceConstraintSet {
-    private final Set<Constraint> constraintSet;
-    private final Map<String, Variable> variables;
+public class DifferenceConstraintSet implements Cloneable {
+    private Set<Constraint> constraintSet;
+    private Map<String, Variable> variables;
 
     public DifferenceConstraintSet(Set<Constraint> constraintSet, Map<String, Variable> variables) {
         this.constraintSet = constraintSet;
@@ -33,5 +33,17 @@ public class DifferenceConstraintSet {
     @Override
     public int hashCode() {
         return Objects.hash(constraintSet, variables);
+    }
+
+    @Override
+    public DifferenceConstraintSet clone() {
+        try {
+            DifferenceConstraintSet out = (DifferenceConstraintSet) super.clone();
+            out.constraintSet = new HashSet<>(constraintSet);
+            out.variables = new HashMap<>(variables);
+            return out;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

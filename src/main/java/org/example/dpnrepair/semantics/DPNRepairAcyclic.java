@@ -6,8 +6,8 @@ import org.example.dpnrepair.DPNUtils;
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.DPN;
 import org.example.dpnrepair.parser.ast.Transition;
+import org.example.dpnrepair.parser.ast.Variable;
 
-import javax.xml.soap.Node;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -51,8 +51,8 @@ public class DPNRepairAcyclic {
         }
         this.repaired = net.dpn;
         this.distance = net.modifiedTransitions.size();
-        DPNPrinter dpnPrinter = new DPNPrinter(this.repaired);
-        dpnPrinter.writeTransitions("solution_transitions.txt");
+//        DPNPrinter dpnPrinter = new DPNPrinter(this.repaired);
+//        dpnPrinter.writeTransitions("solution_transitions.txt");
     }
 
     /**
@@ -192,73 +192,6 @@ public class DPNRepairAcyclic {
         copy.modifiedTransitions.add(t.getId());
         copy.changes++;
         updatePriorityQueue(copy);
-    }
-
-    public void checkCoreachabilitySoundness(DPN dpn, ConstraintGraph cg) {
-        Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeMap = new HashMap<>();
-        for (ConstraintGraph.Node node : cg.getNodes()) {
-            if (node.isFinal()) {
-                nodeMap.put(node, new HashSet<>(Collections.singleton(node.getCanonicalForm())));
-            } else {
-                nodeMap.put(node, new HashSet<>());
-            }
-        }
-        Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeMapPrev = new HashMap<>();
-        while (!equalMaps(nodeMap, nodeMapPrev)) {
-            nodeMapPrev.putAll(nodeMap);
-            nodeMap = new HashMap<>();
-
-        }
-    }
-
-    private boolean equalMaps(
-            Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> first,
-            Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> second) {
-        return !first.isEmpty() && first.entrySet()
-                .stream()
-                .allMatch(entry -> {
-                    Set<DifferenceConstraintSet> firstsSet = first.get(entry.getKey());
-                    Set<DifferenceConstraintSet> secondSet = second.get(entry.getKey());
-                    Set<DifferenceConstraintSet> difference = (new HashSet<>(firstsSet));
-                    difference.retainAll(secondSet);
-                    return difference.size() == firstsSet.size() && difference.size() == secondSet.size();
-                });
-    }
-
-    private Set<DifferenceConstraintSet> computeCoReach(
-            Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeMap,
-            ConstraintGraph.Node node,
-            DPN dpn,
-            ConstraintGraph cg,
-            Map<Integer, ConstraintGraph.Node> idNodeMap) {
-        Set<DifferenceConstraintSet> result = nodeMap.get(node);
-        List<ConstraintGraph.Arc> arcs = cg.getArcs()
-                .stream()
-                .filter(arc -> arc.getOrigin() == node.getId())
-                .collect(Collectors.toList());
-
-        Set<ConstraintGraph.Node> readOrSilent = new HashSet<>();
-        Set<ConstraintGraph.Node> write = new HashSet<>();
-        for (ConstraintGraph.Arc arc : arcs) {
-            Transition t = dpn.getTransitions().get(arc.getTransition());
-            if (t.getGuard().getWritten().size() == 0 || arc.isSilent()) {
-                readOrSilent.add(idNodeMap.get(arc.getTransition()));
-            } else {
-                write.add(idNodeMap.get(arc.getTransition()));
-            }
-        }
-        for (ConstraintGraph.Node nodePrime : readOrSilent) {
-            result.addAll(nodeMap.get(nodePrime));
-        }
-        for (ConstraintGraph.Node nodePrime : write) {
-            //
-        }
-        return result;
-    }
-
-    private DifferenceConstraintSet computeExists() {
-        // TODO
-        return null;
     }
 
     static class RepairDPN {
