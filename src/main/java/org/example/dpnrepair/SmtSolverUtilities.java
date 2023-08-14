@@ -33,7 +33,7 @@ public class SmtSolverUtilities {
 
         if (constraint.isStrict()) {
             // x - y <= k
-            return ifm.lessOrEquals(
+            return ifm.lessThan(
                     ifm.subtract(
                             integerVariablesMap.get(constraint.getFirst()),
                             integerVariablesMap.get(constraint.getSecond())
@@ -42,7 +42,7 @@ public class SmtSolverUtilities {
             );
         } else {
             // x - y < k
-            return ifm.lessThan(
+            return ifm.lessOrEquals(
                     ifm.subtract(
                             integerVariablesMap.get(constraint.getFirst()),
                             integerVariablesMap.get(constraint.getSecond())
