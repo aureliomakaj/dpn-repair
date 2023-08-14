@@ -16,10 +16,14 @@ import java.util.stream.Collectors;
 public class DPNRepairCyclic extends DPNRepairAcyclic {
 
     private SolverContext solverContext;
+    private Map<DifferenceConstraintSet, Integer> diffSetMap;
+    int n;
 
     public DPNRepairCyclic(DPN dpn, SolverContext solverContext) {
         super(dpn);
         this.solverContext = solverContext;
+        n = 0;
+        diffSetMap = new HashMap<>();
     }
 
     public void repair() {
@@ -128,7 +132,12 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
                 .collect(Collectors.toMap(ConstraintGraph.Node::getId, Function.identity()));
 
         Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeMap = new HashMap<>();
-        for (ConstraintGraph.Node node : cg.getNodes()) {
+        Set<ConstraintGraph.Node> nodes = new TreeSet<>(Comparator.comparingInt(ConstraintGraph.Node::getId));
+        nodes.addAll(cg.getNodes());
+        for (ConstraintGraph.Node node : nodes) {
+            if (!diffSetMap.containsKey(node.getCanonicalForm())) {
+                diffSetMap.put(node.getCanonicalForm(), ++n);
+            }
             if (node.isFinal()) {
                 nodeMap.put(node, new HashSet<>(Collections.singleton(node.getCanonicalForm())));
             } else {
@@ -141,14 +150,22 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
             iterations++;
             nodeMapPrev = new HashMap<>(nodeMap);
             nodeMap = new HashMap<>();
-            for (ConstraintGraph.Node node: cg.getNodes()) {
+            for (ConstraintGraph.Node node : cg.getNodes()) {
                 nodeMap.put(node, computeCoReach(nodeMapPrev, node, dpn, cg, idNodeMap));
             }
         }
-
-        for (ConstraintGraph.Node node: cg.getNodes()) {
+//        Map<Integer, List<Integer>> nodeSets = new HashMap<>();
+        for (ConstraintGraph.Node node : cg.getNodes()) {
+//            List<Integer> l = new ArrayList<>();
+//            for(DifferenceConstraintSet s: nodeMap.get(node)) {
+//                l.add(diffSetMap.get(s));
+//            }
+//            nodeSets.put(node.getId(), l);
             boolean res = areDifferenceConstraintSetsEqual(nodeMap.get(node), node.getCanonicalForm());
-
+            System.out.println("Node with id " + node.getId() + " has res " + res);
+            if (!res) {
+                return false;
+            }
         }
         return true;
     }
@@ -202,12 +219,18 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
         for (ConstraintGraph.Node nodePrime : readOrSilent) {
             result.addAll(nodeMap.get(nodePrime));
         }
+        if (node.getId() == 1) {
+            System.out.println("debug");
+        }
         for (WriteElement we : write) {
             for (DifferenceConstraintSet constraintSet : nodeMap.get(we.node)) {
                 DifferenceConstraintSet canonical = CanonicalFormUtilities.getCanonicalForm(
-                        this.intersect(computeExists(we.writeVars, constraintSet), we.node.getCanonicalForm())
+                        this.intersect(computeExists(we.writeVars, constraintSet), node.getCanonicalForm())
                 );
                 if (canonical != null) {
+                    if (!diffSetMap.containsKey(canonical)) {
+                        diffSetMap.put(canonical, ++n);
+                    }
                     result.add(canonical);
                 }
             }
@@ -252,7 +275,7 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
         FormulaManager fm = solverContext.getFormulaManager();
         BooleanFormulaManager bfm = fm.getBooleanFormulaManager();
         List<BooleanFormula> orFormulaOperands = new ArrayList<>();
-        for(DifferenceConstraintSet set: result) {
+        for (DifferenceConstraintSet set : result) {
             orFormulaOperands.add(SmtSolverUtilities.getSmtFormula(fm, set));
         }
         BooleanFormula orFormula = bfm.or(orFormulaOperands);
@@ -264,14 +287,9 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
             prover.addConstraint(finalFormula);
             // Is there a set of values such that the systems are different?
             // If no such values exist then the systems are equivalent
-            boolean res = prover.isUnsat();
-            if (!res) {
-                Model model = prover.getModel();
-
-            }
+            return prover.isUnsat();
         } catch (SolverException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        return false;
     }
 }
