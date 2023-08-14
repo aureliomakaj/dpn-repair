@@ -22,13 +22,13 @@ public class Main {
 
 //        String figure = "src/main/resources/figure1-dpn.pnml";
 //        String figure = "src/main/resources/figure-2-dpn.pnml";
-//        String figure = "src/main/resources/figure-3-dpn.pnml";
+        String figure = "src/main/resources/figure-3-dpn.pnml";
 //        String figure = "src/main/resources/figure-4-dpn.pnml";
 //        String figure = "src/main/resources/wf-1-deadlock-dpn.pnml";
 //        String figure = "src/main/resources/wf-1-deadlock-free-dpn.pnml";
 //        String figure = "src/main/resources/wf-2-miss-trans-dpn.pnml";
 //        String figure = "src/main/resources/wf-3-deadlock-dpn.pnml";
-        String figure = "src/main/resources/img-prof-1-dpn.pnml";
+//        String figure = "src/main/resources/img-prof-1-dpn.pnml";
 //        String figure = "src/main/resources/img-prof-no-ciclo-dpn.pnml";
         DPNParser parser = new DPNParser(figure);
         parser.parse();
@@ -37,13 +37,14 @@ public class Main {
 //        ConstraintGraphPrinter cgPrinter = new ConstraintGraphPrinter(cg);
 //        cgPrinter.writeToXML("img-prof-1-graph", false);
 //        cgPrinter.writeRaw("img-prof-1-graph-raw.txt");
-//        DPNRepairAcyclic dpnRepairAcyclic = new DPNRepairAcyclic(parser.getDpn());
-//        dpnRepairAcyclic.repair();
-        DifferenceConstraintSet a = CanonicalFormUtilities.getCanonicalForm(getC6());
+        DPNRepairAcyclic dpnRepairAcyclic = new DPNRepairAcyclic(parser.getDpn());
+        dpnRepairAcyclic.repair();
+//        DifferenceConstraintSet a = CanonicalFormUtilities.getCanonicalForm(getC6());
         DPNRepairCyclic dpnRepairCyclic = new DPNRepairCyclic(parser.getDpn(), SmtSolverFactory.getZ3SmtSolver());
-        DifferenceConstraintSet b = CanonicalFormUtilities.getCanonicalForm(getC5());
-        boolean res  = dpnRepairCyclic.areDifferenceConstraintSetsEqual(new HashSet<>(Collections.singleton(a)),a );
-        dpnRepairCyclic.repair();
+//        DifferenceConstraintSet b = CanonicalFormUtilities.getCanonicalForm(getC5());
+        dpnRepairCyclic.checkCoreachabilitySoundness(dpnRepairAcyclic.getRepaired(), new ConstraintGraph(dpnRepairAcyclic.getRepaired()));
+//        boolean res  = dpnRepairCyclic.areDifferenceConstraintSetsEqual(new HashSet<>(Collections.singleton(a)),a );
+//        dpnRepairCyclic.repair();
 
 //        DifferenceConstraintSet res = dpnRepairCyclic.computeExists(Collections.singletonList("y"), a);
 //        DifferenceConstraintSet res2 = CanonicalFormUtilities.getCanonicalForm(dpnRepairCyclic.intersect(res, b));

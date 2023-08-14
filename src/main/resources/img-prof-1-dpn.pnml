@@ -160,12 +160,12 @@
          </marking>
       </finalmarkings>
       <variables>
-         <variable initialValue="10" type="java.lang.Long">
+         <variable initialValue="0" type="java.lang.Long">
             <name>x</name>
             <position x="0" y="0"/>
             <dimension height="50" width="50"/>
          </variable>
-         <variable initialValue="10"  type="java.lang.Long">
+         <variable initialValue="0"  type="java.lang.Long">
             <name>y</name>
             <position x="0" y="0"/>
             <dimension height="50" width="50"/>
