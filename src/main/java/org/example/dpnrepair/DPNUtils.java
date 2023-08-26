@@ -1,6 +1,5 @@
 package org.example.dpnrepair;
 
-import org.example.dpnrepair.parser.ast.Arc;
 import org.example.dpnrepair.parser.ast.DPN;
 import org.example.dpnrepair.parser.ast.Marking;
 import org.example.dpnrepair.parser.ast.Transition;
@@ -23,20 +22,25 @@ public class DPNUtils {
             DPN dpn, ConstraintGraph cg, ConstraintGraph.Node current, boolean filterSilent
     ) {
 
+        Set<Integer> visitedNodes = new HashSet<>();
+        visitedNodes.add(current.getId());
         Set<ConstraintGraph.Arc> pool = cg.getArcs()
                 .stream()
                 .filter(arc -> (!filterSilent || !arc.isSilent()) && arc.getDestination() == current.getId() && arc.getOrigin() != arc.getDestination())
                 .collect(Collectors.toSet());
 
         Set<Transition> result = new HashSet<>();
+
         do {
             Set<ConstraintGraph.Arc> newPool = new HashSet<>();
             for (ConstraintGraph.Arc arc : pool) {
                 result.add(dpn.getTransitions().get(arc.getTransition()));
-                newPool.addAll(cg.getArcs()
+                List<ConstraintGraph.Arc> newPoolArcs = cg.getArcs()
                         .stream()
-                        .filter(item -> (!filterSilent || !arc.isSilent()) && item.getDestination() == arc.getOrigin() && arc.getOrigin() != arc.getDestination())
-                        .collect(Collectors.toList()));
+                        .filter(item -> (!filterSilent || !arc.isSilent()) && !visitedNodes.contains(item.getDestination()) && item.getDestination() == arc.getOrigin() && item.getOrigin() != item.getDestination())
+                        .collect(Collectors.toList());
+                visitedNodes.addAll(newPoolArcs.stream().map(ConstraintGraph.Arc::getDestination).collect(Collectors.toList()));
+                newPool.addAll(newPoolArcs);
             }
             pool = newPool;
         } while (!pool.isEmpty());
