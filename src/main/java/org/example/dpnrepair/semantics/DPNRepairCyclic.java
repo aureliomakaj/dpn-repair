@@ -2,6 +2,7 @@ package org.example.dpnrepair.semantics;
 
 import org.example.dpnrepair.CanonicalFormUtilities;
 import org.example.dpnrepair.ConstraintGraphPrinter;
+import org.example.dpnrepair.DPNUtils;
 import org.example.dpnrepair.SmtSolverUtilities;
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.DPN;
@@ -33,18 +34,55 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
             net = priorityQueue.remove();
             setVisited(net.dpn);
             ConstraintGraph cg = new ConstraintGraph(net.dpn);
-            if (cg.isDataAwareSound() && checkCoreachabilitySoundness(toRepair, cg)) {
-                ConstraintGraphPrinter a = new ConstraintGraphPrinter(cg);
-                a.writeRaw("solution");
-                break;
+            Map<Integer, Boolean> soundnessCheck = new HashMap<>();
+            Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeMap = new HashMap<>();
+            if (cg.isDataAwareSound()) {
+                nodeMap = computeNodesCoreachability(toRepair, cg);
+                soundnessCheck = checkSoundness(cg, nodeMap);
+                if(soundnessCheck.values().stream().allMatch(value -> value)){
+                    break;
+                }
+//                ConstraintGraphPrinter a = new ConstraintGraphPrinter(cg);
+//                a.writeRaw("solution");
             }
             fixDead(net, cg);
             fixMissing(net, cg);
+            fix(net, cg, soundnessCheck, nodeMap);
         }
         this.repaired = net.dpn;
         this.distance = net.modifiedTransitions.size();
 //        DPNPrinter dpnPrinter = new DPNPrinter(this.repaired);
 //        dpnPrinter.writeTransitions("solution_transitions.txt");
+    }
+
+    protected void fix(RepairDPN net, ConstraintGraph cg, Map<Integer, Boolean> soundnessCheck,
+                       Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeCoreachMap) {
+        Map<Integer, ConstraintGraph.Node> nodeMap = cg.getNodes()
+                .stream()
+                .collect(
+                        Collectors.toMap(ConstraintGraph.Node::getId, Function.identity())
+                );
+        List<Integer> ids = soundnessCheck.entrySet()
+                .stream()
+                .filter(entry -> !entry.getValue())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        for (Integer nodeId : ids) {
+            ConstraintGraph.Node curr = nodeMap.get(nodeId);
+            List<Transition> enabledTransitions = DPNUtils.getEnabledTransitions(net.dpn.getTransitions().values(), curr.getMarking());
+            for(DifferenceConstraintSet differenceConstraintSet: nodeCoreachMap.get(curr)){
+                for (Transition enabledTransition : enabledTransitions) {
+                    forwardRepair(net, enabledTransition, differenceConstraintSet);
+                }
+            }
+            Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(net.dpn, cg, curr, false);
+            for(DifferenceConstraintSet differenceConstraintSet: nodeCoreachMap.get(curr)){
+                for (Transition t : previousTransitions) {
+                    backwardRepair(net, t, differenceConstraintSet);
+                }
+            }
+        }
     }
 
     protected void forwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
@@ -126,7 +164,7 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
 
     }
 
-    public boolean checkCoreachabilitySoundness(DPN dpn, ConstraintGraph cg) {
+    public Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> computeNodesCoreachability(DPN dpn, ConstraintGraph cg) {
         Map<Integer, ConstraintGraph.Node> idNodeMap = cg.getNodes()
                 .stream()
                 .collect(Collectors.toMap(ConstraintGraph.Node::getId, Function.identity()));
@@ -154,20 +192,18 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
                 nodeMap.put(node, computeCoReach(nodeMapPrev, node, dpn, cg, idNodeMap));
             }
         }
-//        Map<Integer, List<Integer>> nodeSets = new HashMap<>();
+
+        return nodeMap;
+    }
+
+    public Map<Integer, Boolean> checkSoundness(ConstraintGraph cg,
+                                                Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeMap) {
+        Map<Integer, Boolean> nodeCoreachabilityMap = new HashMap<>();
         for (ConstraintGraph.Node node : cg.getNodes()) {
-//            List<Integer> l = new ArrayList<>();
-//            for(DifferenceConstraintSet s: nodeMap.get(node)) {
-//                l.add(diffSetMap.get(s));
-//            }
-//            nodeSets.put(node.getId(), l);
             boolean res = areDifferenceConstraintSetsEqual(nodeMap.get(node), node.getCanonicalForm());
-            System.out.println("Node with id " + node.getId() + " has res " + res);
-            if (!res) {
-                return false;
-            }
+            nodeCoreachabilityMap.put(node.getId(), res);
         }
-        return true;
+        return nodeCoreachabilityMap;
     }
 
     private boolean equalMaps(
