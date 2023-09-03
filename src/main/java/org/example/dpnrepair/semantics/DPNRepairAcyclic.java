@@ -1,15 +1,11 @@
 package org.example.dpnrepair.semantics;
 
-import org.example.dpnrepair.ConstraintGraphPrinter;
-import org.example.dpnrepair.DPNPrinter;
 import org.example.dpnrepair.DPNUtils;
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.DPN;
 import org.example.dpnrepair.parser.ast.Transition;
-import org.example.dpnrepair.parser.ast.Variable;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DPNRepairAcyclic {
@@ -26,14 +22,6 @@ public class DPNRepairAcyclic {
         priorityQueue = new PriorityQueue<>(Comparator.comparingInt(o -> o.modifiedTransitions.size()));
     }
 
-    public DPN getRepaired() {
-        return repaired;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
     public void repair() {
         priorityQueue.add(new RepairDPN(toRepair));
         RepairDPN net;
@@ -42,8 +30,6 @@ public class DPNRepairAcyclic {
             setVisited(net.dpn);
             ConstraintGraph cg = new ConstraintGraph(net.dpn);
             if (cg.isDataAwareSound()) {
-                ConstraintGraphPrinter a = new ConstraintGraphPrinter(cg);
-                a.writeRaw("solution");
                 break;
             }
             fixDead(net, cg);
@@ -51,8 +37,6 @@ public class DPNRepairAcyclic {
         }
         this.repaired = net.dpn;
         this.distance = net.modifiedTransitions.size();
-//        DPNPrinter dpnPrinter = new DPNPrinter(this.repaired);
-//        dpnPrinter.writeTransitions("solution_transitions.txt");
     }
 
     /**
@@ -81,19 +65,17 @@ public class DPNRepairAcyclic {
     }
 
     protected void fixDead(RepairDPN net, ConstraintGraph cg) {
-        ConstraintGraph.Node initial = cg.getInitialNode();
-        Map<Integer, ConstraintGraph.Node> nodeMap = cg.getNodes()
-                .stream()
-                .collect(
-                        Collectors.toMap(ConstraintGraph.Node::getId, Function.identity())
-                );
+        Map<Integer, ConstraintGraph.Node> nodeMap = cg.getNodesMappedById();
 
-        for (Integer nodeId : cg.getDeadlocks()) {
+        for (Integer nodeId : cg.getDeadNodes()) {
             ConstraintGraph.Node curr = nodeMap.get(nodeId);
+            // Let FW := {t ∈ T | M[t⟩M′ for some marking M′} be the set of all non-silent
+            // transitions that can fire from marking M in the underlying Petri Net
             List<Transition> enabledTransitions = DPNUtils.getEnabledTransitions(net.dpn.getTransitions().values(), curr.getMarking());
             for (Transition enabledTransition : enabledTransitions) {
                 forwardRepair(net, enabledTransition, curr.getCanonicalForm());
             }
+            // Let BW be the set of transitions in all paths (M0,C0) ⇝ (M,C).
             Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(net.dpn, cg, curr, false);
             for (Transition t : previousTransitions) {
                 backwardRepair(net, t, curr.getCanonicalForm());
@@ -101,15 +83,21 @@ public class DPNRepairAcyclic {
         }
     }
 
+    // "replace with the same constraint of C"
     protected void forwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
+        // Let N′′ := (P, T, F, V, αI , guard′′) be a copy of N′.
         RepairDPN copy = makeCopy(net);
 
+        // Let y − x ▷◁ k be the guard of t.
         Constraint guard = t.getGuard();
+        // Let y − x ▷◁′ k′ be the corresponding constraint in C.
         Constraint guardUnderlyingNet = getConstraintFromDifferenceConstraintSet(guard.getFirst(), guard.getSecond(), c);
         Transition t2 = copy.dpn.getTransitions().get(t.getId());
+        // guard′′(t) := y − x ▷◁′ k′
         t2.setGuard(guardUnderlyingNet.clone());
         copy.modifiedTransitions.add(t.getId());
         copy.changes++;
+        // UpdateQ(N′′)
         updatePriorityQueue(copy);
     }
 
@@ -129,11 +117,15 @@ public class DPNRepairAcyclic {
         return constraint.orElse(new Constraint(first, second));
     }
 
+    // “replace with the opposite constraint of C”
     protected void backwardRepair(RepairDPN net, Transition t, DifferenceConstraintSet c) {
+        // Let N′′ := (P, T, F, V, αI , guard′) be a copy of N′.
         RepairDPN copy = makeCopy(net);
-
+        // Let y − x ▷◁ k be the guard of t.
         Constraint guard = t.getGuard();
+        // x − y ▷◁′ k′ in C
         Constraint guardUnderlyingNet = getConstraintFromDifferenceConstraintSet(guard.getSecond(), guard.getFirst(), c);
+        // if x − y ▷◁′ k′ in C is such that k′ != +Inf then
         if (guardUnderlyingNet.getValue() != Long.MAX_VALUE) {
             Constraint guardCopy = guard.clone();
             guardCopy.setValue(guardUnderlyingNet.getNegatedValue()); // Negate value
@@ -147,13 +139,17 @@ public class DPNRepairAcyclic {
     }
 
     protected void fixMissing(RepairDPN net, ConstraintGraph cg) {
-        ConstraintGraph.Node initial = cg.getInitialNode();
+//        ConstraintGraph.Node initial = cg.getInitialNode();
+        // Let Missing be the set of missing transitions in CGN′ .
         Set<String> missingTransitions = getMissingTransitions(net.dpn, cg);
         for (String t : missingTransitions) {
             Transition missingTransition = net.dpn.getTransitions().get(t);
+            // Let Nodes be the set of nodes (M,C) of the CGN′ such that t can fire from
+            // marking M in the underlying Petri Net
             List<ConstraintGraph.Node> nodes = getFiring(cg, missingTransition);
             for (ConstraintGraph.Node node : nodes) {
                 forwardRepair(net, missingTransition, node.getCanonicalForm());
+                // Let BW be the set of non-silent transitions in all paths (M0,C0) ⇝ (M,C).
                 Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(net.dpn, cg, node, true);
                 for (Transition previousTransition : previousTransitions) {
                     backForwardRepair(net, previousTransition);
@@ -181,10 +177,14 @@ public class DPNRepairAcyclic {
                 .collect(Collectors.toList());
     }
 
+    // “make the guard true”
     protected void backForwardRepair(RepairDPN net, Transition t) {
+        // Let N′′ := (P, T, F, V, αI , guard′) be a copy of N′.
         RepairDPN copy = makeCopy(net);
 
+        // Let y − x ▷◁ k be the guard of t
         Transition t2 = copy.dpn.getTransitions().get(t.getId());
+        // guard′′(t) := y − x ≤ +Inf
         Constraint newGuard = t2.getGuard().clone();
         newGuard.setValue(Long.MAX_VALUE);
         newGuard.setStrict(false);

@@ -12,9 +12,8 @@ import java.util.stream.IntStream;
 public class CanonicalFormUtilities {
 
     /**
-     * Computete Canonical Form of a difference constraint set if it is consistent, null otherwise
+     * Compute Canonical Form of a difference constraint set if it is consistent, null otherwise
      *
-     * @param differenceConstraintSet
      * @return DifferenceConstraintSet
      */
     public static DifferenceConstraintSet getCanonicalForm(DifferenceConstraintSet differenceConstraintSet) {
@@ -43,6 +42,7 @@ public class CanonicalFormUtilities {
                 if (i == j) {
                     diffMatrix[i][j] = new OrderPair(0L, 1);
                 } else {
+                    // Use Long.MAX_VALUE to represent +Inf
                     diffMatrix[i][j] = new OrderPair(Long.MAX_VALUE, 1);
                 }
             }
@@ -139,6 +139,7 @@ public class CanonicalFormUtilities {
                 newConstraint.setSecond(secondAsWritten.getName());
                 newToBeAddVariables.put(secondAsWritten.getName(), secondAsWritten);
             }
+            // Add the new constraint and compute canonical form
             DifferenceConstraintSet canonicalForm = getCanonicalForm(
                     union(constraintSet, Collections.singletonList(newConstraint), newToBeAddVariables)
             );
@@ -148,9 +149,12 @@ public class CanonicalFormUtilities {
 
             // Canonical form is consistent, thus remove old variable occurrences and rename the fresh ones
             Set<Constraint> finalConstraintSet = new HashSet<>(canonicalForm.getConstraintSet());
+
             finalConstraintSet = finalConstraintSet.stream()
+                    // C′ := C′ \ {x′ − y′ ▷◁′ k′ | x′ ∈ write(c) or y′ ∈ write(c)}
                     .filter(item -> !writtenVars.contains(item.getFirst()) && !writtenVars.contains(item.getSecond()))
-                    .map(item -> { // Rename fresh variables to replace the old ones
+                    // Rename fresh variables to replace the old ones
+                    .map(item -> {
                         if (item.getFirst().endsWith("_w")) {
                             // Remove _w from the end
                             item.setFirst(item.getFirst().substring(0, item.getFirst().length() - 2));
@@ -162,6 +166,7 @@ public class CanonicalFormUtilities {
                     })
                     .collect(Collectors.toSet());
 
+            // To the same of above for the variable set
             Map<String, Variable> finalVarMap = new HashMap<>(canonicalForm.getVariables());
             finalVarMap = finalVarMap.entrySet()
                     .stream()

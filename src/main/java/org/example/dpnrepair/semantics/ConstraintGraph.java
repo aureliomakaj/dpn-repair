@@ -7,6 +7,7 @@ import org.example.dpnrepair.parser.GuardToConstraintConverter;
 import org.example.dpnrepair.parser.ast.*;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +22,7 @@ public class ConstraintGraph {
     private boolean dataAwareSound = true;
 
     private boolean unbounded = false;
-    private List<Integer> deadlocks = new ArrayList<>();
+    private List<Integer> deadNodes = new ArrayList<>();
 
     public int getNodeCounter() {
         return nodeCounter;
@@ -43,8 +44,8 @@ public class ConstraintGraph {
         return unbounded;
     }
 
-    public List<Integer> getDeadlocks() {
-        return deadlocks;
+    public List<Integer> getDeadNodes() {
+        return deadNodes;
     }
 
     public void setNodeCounter(int nodeCounter) {
@@ -71,8 +72,8 @@ public class ConstraintGraph {
         this.unbounded = unbounded;
     }
 
-    public void setDeadlocks(List<Integer> deadlocks) {
-        this.deadlocks = deadlocks;
+    public void setDeadNodes(List<Integer> deadNodes) {
+        this.deadNodes = deadNodes;
     }
 
     public ConstraintGraph(DPN dpn) {
@@ -103,6 +104,7 @@ public class ConstraintGraph {
             Node iter = queue.remove();
             List<Transition> enabledTransitions = DPNUtils.getEnabledTransitions(dpn.getTransitions().values(), iter.getMarking());
             for (Transition enabledTransition : enabledTransitions) {
+                // Create an arch for each enabled transition, with current node as origin
                 Arc arc = new Arc();
                 arc.origin = iter.id;
                 arc.transition = enabledTransition.getId();
@@ -117,7 +119,7 @@ public class ConstraintGraph {
                         iter.getCanonicalForm(), enabledTransition.getGuard(), dpn.getVariables()
                 );
 
-                // Proceed only if constraint graph is consistent.
+                // Add only if constraint set is consistent.
                 if (newDiffSetCanonical != null) {
                     // If still data-aware sound, check for unboundness
                     if (dataAwareSound && isUnbounded(nextMarking, newDiffSetCanonical)) {
@@ -129,7 +131,7 @@ public class ConstraintGraph {
                     fillQueue(nextMarking, newDiffSetCanonical, arc, queue, dpn.getFinalMarking());
                 }
 
-                // If transition doesn't write any variable
+                // If transition doesn't contain write variables
                 if (enabledTransition.getGuard().getWritten().size() == 0) {
                     // Silent transition
                     Arc silentArc = new Arc();
@@ -142,7 +144,7 @@ public class ConstraintGraph {
                             iter.getCanonicalForm(), enabledTransition.getGuard().getNegated(), dpn.getVariables()
                     );
 
-                    // Proceed only if consistent
+                    // Add only if constraint set is consistent
                     if (silentSetCanonical != null) {
                         fillQueue(iter.getMarking().clone(), silentSetCanonical, silentArc, queue, dpn.getFinalMarking());
                     }
@@ -150,8 +152,8 @@ public class ConstraintGraph {
             }
         }
 
-        findDeadlocks();
-        if (!deadlocks.isEmpty()) {
+        findDeadNodes();
+        if (!deadNodes.isEmpty()) {
             this.dataAwareSound = false;
         }
         if (this.dataAwareSound) {
@@ -165,11 +167,14 @@ public class ConstraintGraph {
         if (marking.equals(finalMarking)) {
             newNode.finalNode = true;
         }
+        // Check if the node has already been found
         Optional<Node> optionalInserted = getAlreadyInserted(newNode);
         if (optionalInserted.isPresent()) {
+            // Add only the arc
             arc.destination = optionalInserted.get().id;
             arcs.add(arc);
         } else {
+            // Add the new node and arc
             queue.add(newNode);
             nodes.add(newNode);
             arc.destination = newNode.id;
@@ -177,6 +182,10 @@ public class ConstraintGraph {
         }
     }
 
+    /**
+     * Initial node is computed by considering all initial values (represented as x = k1, y = k2, ...)
+     * and transforming these equalities in difference constraints
+     */
     private Node computeInitialNode(DPN dpn) {
         Set<Constraint> initialConstraintSet = new HashSet<>();
         for (Variable v : dpn.getVariables().values()) {
@@ -206,7 +215,8 @@ public class ConstraintGraph {
                 .anyMatch(n -> m.greaterThan(n.getMarking()) && canonicalForm.equals(n.getCanonicalForm()));
     }
 
-    private void findDeadlocks() {
+    private void findDeadNodes() {
+        // Map each node with it's outgoing arcs
         Map<Integer, List<Arc>> outgoingArcsForNodes = new HashMap<>();
         for (Arc a : arcs) {
             outgoingArcsForNodes.putIfAbsent(a.origin, new ArrayList<>());
@@ -215,7 +225,9 @@ public class ConstraintGraph {
                 outgoingArcsForNodes.get(a.origin).add(a);
             }
         }
-        this.deadlocks = outgoingArcsForNodes
+
+        // A dead node is just a node without outgoing arcs
+        this.deadNodes = outgoingArcsForNodes
                 .entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().isEmpty())
@@ -231,6 +243,14 @@ public class ConstraintGraph {
         Set<String> dpnTransitions = new HashSet<>(dpn.getTransitions().keySet());
         Set<String> graphTransitions = arcs.stream().filter(arc -> !arc.isSilent()).map(Arc::getTransition).collect(Collectors.toSet());
         return !graphTransitions.containsAll(dpnTransitions);
+    }
+
+    public Map<Integer, ConstraintGraph.Node> getNodesMappedById() {
+        return getNodes()
+                .stream()
+                .collect(
+                        Collectors.toMap(ConstraintGraph.Node::getId, Function.identity())
+                );
     }
 
     public class Node {
@@ -266,7 +286,9 @@ public class ConstraintGraph {
             this.visited = visited;
         }
 
-        public boolean isFinal() { return finalNode; }
+        public boolean isFinal() {
+            return finalNode;
+        }
 
         @Override
         public boolean equals(Object o) {
@@ -282,7 +304,7 @@ public class ConstraintGraph {
         }
     }
 
-    public class Arc {
+    public static class Arc {
         private int origin;
         private String transition;
         private int destination;
@@ -316,10 +338,5 @@ public class ConstraintGraph {
         public int hashCode() {
             return Objects.hash(origin, transition, destination, silent);
         }
-    }
-
-    enum EdgeType {
-        DISCOVERY_EDGE,
-        BACK_EDGE
     }
 }

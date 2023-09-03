@@ -20,7 +20,6 @@ public class DPNParser {
     private final Document xml;
     private DPN dpn;
     private static final List<String> ALLOWED_TAGS = Arrays.asList(Tags.PNML, Tags.NET, Tags.NAME, Tags.TEXT, Tags.PAGE, Tags.PLACE, Tags.GRAPHICS, Tags.POSITION, Tags.DIMENSION, Tags.TRANSITION, Tags.FILL, Tags.WRITE_VAR, Tags.READ_VAR, Tags.ARC, Tags.ARC_TYPE, Tags.FINAL_MARKINGS, Tags.INITIAL_MARKINGS, Tags.MARKING, Tags.VARIABLES, Tags.VARIABLE);
-
     private final Map<String, String> idsCollected = new HashMap<>();
 
     public DPNParser(String file) throws ParserConfigurationException, IOException, SAXException {

@@ -64,7 +64,7 @@ public class GuardToConstraintConverter {
         }
 
         if (parts[0].contains(MINUS)) {
-            // X - Y
+            // X - Y op K
             String[] vars = parts[0].split(MINUS);
             long value = Long.parseLong(parts[1]);
             if (isLeastToken(token)) {
@@ -83,6 +83,7 @@ public class GuardToConstraintConverter {
                 constraint.setStrict(true);
             }
         } else if (isVariable(parts[1])) {
+            // X op Y
             if (isLeastToken(token)) {
                 // X < Y   =>   X - Y < 0
                 constraint.setFirst(parts[0]);
@@ -97,6 +98,7 @@ public class GuardToConstraintConverter {
                 constraint.setStrict(token.equals(GT));
             }
         } else {
+            // X op K
             if (isLeastToken(token)) {
                 // X < K   =>   X - Z < K
                 constraint.setFirst(parts[0]);
