@@ -151,10 +151,10 @@ public class CanonicalFormUtilities {
             Set<Constraint> finalConstraintSet = new HashSet<>(canonicalForm.getConstraintSet());
 
             finalConstraintSet = finalConstraintSet.stream()
-                    // C′ := C′ \ {x′ − y′ ▷◁′ k′ | x′ ∈ write(c) or y′ ∈ write(c)}
+                    // C′ := C′ \ {x′ − y′ op k′ | x′ in write(c) or y′ in write(c)}
                     .filter(item -> !writtenVars.contains(item.getFirst()) && !writtenVars.contains(item.getSecond()))
                     // Rename fresh variables to replace the old ones
-                    .map(item -> {
+                    .peek(item -> {
                         if (item.getFirst().endsWith("_w")) {
                             // Remove _w from the end
                             item.setFirst(item.getFirst().substring(0, item.getFirst().length() - 2));
@@ -162,7 +162,6 @@ public class CanonicalFormUtilities {
                         if (item.getSecond().endsWith("_w")) {
                             item.setSecond(item.getSecond().substring(0, item.getSecond().length() - 2));
                         }
-                        return item;
                     })
                     .collect(Collectors.toSet());
 
@@ -204,6 +203,19 @@ public class CanonicalFormUtilities {
         return new DifferenceConstraintSet(newConstraintSet, newVariableMap);
     }
 
+    // Performs S = first - second
+    public static Set<DifferenceConstraintSet> difference(DifferenceConstraintSet first, DifferenceConstraintSet second) {
+        Set<DifferenceConstraintSet> result = new HashSet<>();
+        second.getConstraintSet()
+                .forEach(constraint -> {
+                    Map<String, Variable> toBeAddVariable = new HashMap<>();
+                    toBeAddVariable.put(constraint.getFirst(), second.getVariables().get(constraint.getFirst()));
+                    toBeAddVariable.put(constraint.getSecond(), second.getVariables().get(constraint.getSecond()));
+                    result.add(addConstraint(first, constraint.getNegated(), toBeAddVariable));
+                });
+
+        return result;
+    }
     public static class OrderPair {
         private final long value;
         private final int loose; // 0 / 1
