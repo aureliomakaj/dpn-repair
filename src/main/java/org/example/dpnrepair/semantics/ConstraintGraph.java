@@ -104,7 +104,7 @@ public class ConstraintGraph {
             Node iter = queue.remove();
             List<Transition> enabledTransitions = DPNUtils.getEnabledTransitions(dpn.getTransitions().values(), iter.getMarking());
             for (Transition enabledTransition : enabledTransitions) {
-                // Create an arch for each enabled transition, with current node as origin
+                // Create an arc for each enabled transition, with current node as origin
                 Arc arc = new Arc();
                 arc.origin = iter.id;
                 arc.transition = enabledTransition.getId();
@@ -151,13 +151,25 @@ public class ConstraintGraph {
                 }
             }
         }
-
         findDeadNodes();
         if (!deadNodes.isEmpty()) {
-            this.dataAwareSound = false;
+            dataAwareSound = false;
         }
-        if (this.dataAwareSound) {
-            this.dataAwareSound = !hasMissingTransitions(dpn);
+
+        if (dataAwareSound) {
+            verifyLeftTokens();
+        }
+        if (dataAwareSound) {
+            dataAwareSound = !hasMissingTransitions(dpn);
+        }
+    }
+
+    private void verifyLeftTokens() {
+        Set<Node> finals = nodes.stream().filter(Node::isFinal).collect(Collectors.toSet());
+        for (Node n : nodes) {
+            dataAwareSound = dataAwareSound && finals
+                    .stream()
+                    .noneMatch(finalNode -> n.getMarking().greaterThanOrEqual(finalNode.getMarking()) && !n.equals(finalNode));
         }
     }
 
