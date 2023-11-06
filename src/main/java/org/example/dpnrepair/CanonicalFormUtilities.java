@@ -155,13 +155,26 @@ public class CanonicalFormUtilities {
                     .filter(item -> !writtenVars.contains(item.getFirst()) && !writtenVars.contains(item.getSecond()))
                     // Rename fresh variables to replace the old ones
                     .peek(item -> {
-                        if (item.getFirst().endsWith("_w")) {
+                        if (isTempWritten(item.getFirst())) {
                             // Remove _w from the end
-                            item.setFirst(item.getFirst().substring(0, item.getFirst().length() - 2));
+                            item.setFirst(rewriteTempWritten(item.getFirst()));
                         }
-                        if (item.getSecond().endsWith("_w")) {
-                            item.setSecond(item.getSecond().substring(0, item.getSecond().length() - 2));
+                        if (isTempWritten(item.getSecond())) {
+                            item.setSecond(rewriteTempWritten(item.getSecond()));
                         }
+                        item.setWritten(item.getWritten().stream().map(s -> {
+                            if (isTempWritten(s)) {
+                                return rewriteTempWritten(s);
+                            }
+                            return s;
+                        }).collect(Collectors.toList()));
+
+                        item.setRead(item.getRead().stream().map(s -> {
+                            if (isTempWritten(s)) {
+                                return rewriteTempWritten(s);
+                            }
+                            return s;
+                        }).collect(Collectors.toList()));
                     })
                     .collect(Collectors.toSet());
 
@@ -172,14 +185,14 @@ public class CanonicalFormUtilities {
                     .filter(entry -> !writtenVars.contains(entry.getKey()))
                     .collect(Collectors.toMap(//Rename fresh variables to replace the old ones
                             entry -> {
-                                if (entry.getKey().endsWith("_w")) {
-                                    return entry.getKey().substring(0, entry.getKey().length() - 2);
+                                if (isTempWritten(entry.getKey())) {
+                                    return rewriteTempWritten(entry.getKey());
                                 }
                                 return entry.getKey();
                             },
                             entry -> {
-                                if (entry.getKey().endsWith("_w")) {
-                                    entry.getValue().setName(entry.getValue().getName().substring(0, entry.getValue().getName().length() - 2));
+                                if (isTempWritten(entry.getKey())) {
+                                    entry.getValue().setName(rewriteTempWritten(entry.getValue().getName()));
                                 }
                                 return entry.getValue();
                             }
@@ -187,6 +200,13 @@ public class CanonicalFormUtilities {
 
             return new DifferenceConstraintSet(finalConstraintSet, finalVarMap);
         }
+    }
+    
+    private static boolean isTempWritten(String variable) {
+        return variable.endsWith("_w");
+    }
+    private static String rewriteTempWritten(String variable) {
+        return variable.substring(0, variable.length() - 2);
     }
 
     public static DifferenceConstraintSet union(DifferenceConstraintSet constraintSet, List<Constraint> toBeAdd,
