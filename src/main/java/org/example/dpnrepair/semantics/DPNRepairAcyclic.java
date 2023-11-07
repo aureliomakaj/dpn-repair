@@ -22,6 +22,9 @@ public class DPNRepairAcyclic {
         priorityQueue = new PriorityQueue<>(Comparator.comparingInt(o -> o.modifiedTransitions.size()));
     }
 
+    public DPN getRepaired() {
+        return repaired;
+    }
     public void repair() {
         priorityQueue.add(new RepairDPN(toRepair));
         RepairDPN net;
