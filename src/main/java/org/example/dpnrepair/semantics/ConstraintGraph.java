@@ -169,7 +169,7 @@ public class ConstraintGraph {
         for (Node n : nodes) {
             dataAwareSound = dataAwareSound && finals
                     .stream()
-                    .noneMatch(finalNode -> n.getMarking().greaterThanOrEqual(finalNode.getMarking()) && !n.equals(finalNode));
+                    .noneMatch(finalNode -> n.getMarking().greaterThanOrEqual(finalNode.getMarking()) && !n.getMarking().equals(finalNode.getMarking()));
         }
     }
 
@@ -232,7 +232,7 @@ public class ConstraintGraph {
         Map<Integer, List<Arc>> outgoingArcsForNodes = new HashMap<>();
         for (Arc a : arcs) {
             outgoingArcsForNodes.putIfAbsent(a.origin, new ArrayList<>());
-            // Add only if arc is self pointing
+            // Add only if arc is not self pointing
             if (a.origin != a.destination) {
                 outgoingArcsForNodes.get(a.origin).add(a);
             }
