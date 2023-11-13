@@ -46,4 +46,13 @@ public class DifferenceConstraintSet implements Cloneable {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String toString() {
+        String out = "";
+        for(Constraint c: constraintSet) {
+            out = out.concat(c + "\n");
+        }
+        return out;
+    }
 }

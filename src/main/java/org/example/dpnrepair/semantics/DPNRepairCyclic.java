@@ -16,7 +16,9 @@ import java.util.stream.Collectors;
 public class DPNRepairCyclic extends DPNRepairAcyclic {
 
     private final SolverContext solverContext;
-
+    private Set<DifferenceConstraintSet> visitedForms;
+    private Map<Integer, DifferenceConstraintSet> integerDifferenceConstraintSetMap;
+    private int number;
     public DPNRepairCyclic(DPN dpn, SolverContext solverContext) {
         super(dpn);
         this.solverContext = solverContext;
@@ -46,6 +48,15 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
         this.distance = net.modifiedTransitions.size();
     }
 
+    private int findKeyOfConstraint(DifferenceConstraintSet s) {
+        for (Map.Entry<Integer, DifferenceConstraintSet> entry: integerDifferenceConstraintSetMap.entrySet()) {
+            if(entry.getValue().equals(s)) {
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
+
     protected void fixCoreachabilityNodes(RepairDPN net, ConstraintGraph cg, Map<Integer, Boolean> soundnessCheck,
                                           Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeCoreachMap) {
         Map<Integer, ConstraintGraph.Node> nodeMap = cg.getNodes()
@@ -68,14 +79,11 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
                     .flatMap(Collection::stream)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
-
+            Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(net.dpn, cg, curr, false);
             for (DifferenceConstraintSet differenceConstraintSet : setOfDifferenceConstraintSets) {
                 for (Transition enabledTransition : enabledTransitions) {
                     forwardRepair(net, enabledTransition, differenceConstraintSet);
                 }
-            }
-            Set<Transition> previousTransitions = DPNUtils.getPreviousTransitions(net.dpn, cg, curr, false);
-            for (DifferenceConstraintSet differenceConstraintSet : setOfDifferenceConstraintSets) {
                 for (Transition t : previousTransitions) {
                     backwardRepair(net, t, differenceConstraintSet);
                 }
@@ -181,6 +189,19 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
     }
 
     public Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> computeNodesCoreachability(DPN dpn, ConstraintGraph cg) {
+        visitedForms = new HashSet<>();
+        integerDifferenceConstraintSetMap = new HashMap<>();
+        number = 0;
+        for (ConstraintGraph.Node n: cg.getNodes().stream().sorted(Comparator.comparingInt(ConstraintGraph.Node::getId)).collect(Collectors.toList())) {
+            if(!visitedForms.contains(n.getCanonicalForm())) {
+                number += 1;
+                visitedForms.add(n.getCanonicalForm());
+                integerDifferenceConstraintSetMap.put(number, n.getCanonicalForm());
+            }
+        }
+        for (ConstraintGraph.Node n: cg.getNodes()) {
+            System.out.println("Node "+ n.getId() + " constraint " + findKeyOfConstraint(n.getCanonicalForm()));
+        }
         Map<Integer, ConstraintGraph.Node> idNodeMap = cg.getNodes()
                 .stream()
                 .collect(Collectors.toMap(ConstraintGraph.Node::getId, Function.identity()));
@@ -196,10 +217,11 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
             }
         }
         Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeMapPrev = new HashMap<>();
-//        int iterations = 0;
+        int iterations = 0;
         while (!equalMaps(nodeMap, nodeMapPrev)) {
-//            iterations++;
+            iterations++;
             nodeMapPrev = new HashMap<>(nodeMap);
+            printIteration(iterations, nodeMapPrev);
             nodeMap = new HashMap<>();
             for (ConstraintGraph.Node node : cg.getNodes()) {
                 nodeMap.put(node, computeCoReach(nodeMapPrev, node, dpn, cg, idNodeMap));
@@ -207,6 +229,23 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
         }
 
         return nodeMap;
+    }
+
+    private void printIteration(int iterations, Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeMapPrev) {
+        Map<Integer, Integer> idToId = new HashMap<>();
+        idToId.put(1, 1);
+        idToId.put(2, 2);
+        idToId.put(4, 3);
+        idToId.put(3, 4);
+        idToId.put(7, 5);
+        idToId.put(6, 6);
+        System.out.println("************* Iteration " + iterations);
+        for (Map.Entry<ConstraintGraph.Node, Set<DifferenceConstraintSet>> entry: nodeMapPrev.entrySet()) {
+            System.out.println("++++++ Node " + idToId.get(entry.getKey().getId()));
+            for (DifferenceConstraintSet dcs: entry.getValue()) {
+                System.out.println(findKeyOfConstraint(dcs));
+            }
+        }
     }
 
     public Map<Integer, Boolean> checkSoundness(ConstraintGraph cg,
@@ -276,6 +315,11 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
                         this.intersect(computeExists(we.writeVars, constraintSet), node.getCanonicalForm())
                 );
                 if (canonical != null) {
+                    if (!visitedForms.contains(canonical)) {
+                        visitedForms.add(canonical);
+                        number += 1;
+                        integerDifferenceConstraintSetMap.put(number, canonical);
+                    }
                     result.add(canonical);
                 }
             }

@@ -1,5 +1,6 @@
 package org.example.dpnrepair.semantics;
 
+import org.example.dpnrepair.ConstraintGraphPrinter;
 import org.example.dpnrepair.DPNUtils;
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.DPN;
@@ -32,6 +33,8 @@ public class DPNRepairAcyclic {
             net = priorityQueue.remove();
             setVisited(net.dpn);
             ConstraintGraph cg = new ConstraintGraph(net.dpn);
+//            ConstraintGraphPrinter cgPrinter = new ConstraintGraphPrinter(cg);
+//            cgPrinter.writeRaw("ex-tesi.txt");
             if (cg.isDataAwareSound()) {
                 break;
             }
