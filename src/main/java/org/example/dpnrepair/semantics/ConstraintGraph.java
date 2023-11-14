@@ -156,9 +156,9 @@ public class ConstraintGraph {
             dataAwareSound = false;
         }
 
-        if (dataAwareSound) {
-            verifyLeftTokens();
-        }
+//        if (dataAwareSound) {
+//            verifyLeftTokens();
+//        }
         if (dataAwareSound) {
             dataAwareSound = !hasMissingTransitions(dpn);
         }
