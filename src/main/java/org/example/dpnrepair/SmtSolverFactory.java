@@ -9,7 +9,7 @@ import org.sosy_lab.java_smt.SolverContextFactory;
 import org.sosy_lab.java_smt.api.SolverContext;
 
 public class SmtSolverFactory {
-    public static SolverContext getZ3SmtSolver() throws InvalidConfigurationException {
+    public static SolverContext getSmtSolver() throws InvalidConfigurationException {
         Configuration config = Configuration.defaultConfiguration();
         LogManager logger = BasicLogManager.create(config);
         ShutdownManager shutdown = ShutdownManager.create();
