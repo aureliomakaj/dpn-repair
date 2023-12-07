@@ -2,6 +2,7 @@ package org.example.dpnrepair.parser.ast;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Transition implements Cloneable {
     private String id;
@@ -65,6 +66,19 @@ public class Transition implements Cloneable {
         return enabling.entrySet()
                 .stream()
                 .allMatch( entry -> marking.getPlaceTokenMap().get(entry.getKey()) >= entry.getValue());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transition that = (Transition) o;
+        return that.name.equals(this.name) && that.guard.equals(this.guard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, guard);
     }
 
     @Override

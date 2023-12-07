@@ -1,0 +1,686 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pnml>
+   <net id="net1" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
+      <name>
+         <text>New version of Unlabeled net</text>
+      </name>
+      <page id="n0">
+         <name>
+            <text/>
+         </name>
+         <place id="i">
+            <name>
+               <text>i</text>
+            </name>
+            <toolspecific localNodeID="4887b380-79bf-4be1-b1b5-75bf099e719b" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p1">
+            <name>
+               <text>p1</text>
+            </name>
+            <toolspecific localNodeID="f1de0f86-733d-458b-a3a7-10cc168d1f08" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p2">
+            <name>
+               <text>p2</text>
+            </name>
+            <toolspecific localNodeID="73a84ac9-e892-4db1-b645-1e5522be5108" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p8">
+            <name>
+               <text>p8</text>
+            </name>
+            <toolspecific localNodeID="aa8207e1-3dc8-45a2-bc8a-a23ffe33ccc1" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p3">
+            <name>
+               <text>p3</text>
+            </name>
+            <toolspecific localNodeID="b0f31f96-ca01-463f-bcf6-fca129aa2681" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p91">
+            <name>
+               <text>p91</text>
+            </name>
+            <toolspecific localNodeID="7520e2fd-894d-453f-a0af-7c34c116cdf1" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p9">
+            <name>
+               <text>p9</text>
+            </name>
+            <toolspecific localNodeID="2bbcc6c8-6b0f-42a8-9191-17f2a4f375b4" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p5">
+            <name>
+               <text>p5</text>
+            </name>
+            <toolspecific localNodeID="d8fa7abe-a7bb-4e6c-867f-03004880f132" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p7">
+            <name>
+               <text>p7</text>
+            </name>
+            <toolspecific localNodeID="b8302b86-6acf-4142-8d85-18db4e75d5f4" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p4">
+            <name>
+               <text>p4</text>
+            </name>
+            <toolspecific localNodeID="59fad66c-4d67-4ed8-8654-e840243f80f8" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p6">
+            <name>
+               <text>p6</text>
+            </name>
+            <toolspecific localNodeID="f30e4b3d-a25d-4015-aea4-9631b2bcd2e8" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="o">
+            <name>
+               <text>o</text>
+            </name>
+            <toolspecific localNodeID="3e912e19-8961-4c4d-972e-2726c2ffc36c" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <transition guard="(reqd&gt;0)" id="creditrequest">
+            <name>
+               <text>creditrequest</text>
+            </name>
+            <toolspecific activity="creditrequest" localNodeID="b38d543c-1b16-40bf-a14e-30b05e07055c"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <writeVariable>reqd</writeVariable>
+         </transition>
+         <transition guard="(ok&gt;-9223372036854775807)" id="verify">
+            <name>
+               <text>verify</text>
+            </name>
+            <toolspecific activity="verify" localNodeID="b7bddf99-24a7-4a6c-8b9d-3057b17f3199"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <writeVariable>ok</writeVariable>
+         </transition>
+         <transition guard="(ok&gt;=0)" id="prepare">
+            <name>
+               <text>prepare</text>
+            </name>
+            <toolspecific activity="prepare" localNodeID="52956d27-4bea-4bda-9966-25d813e2e7c0"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <readVariable>ok</readVariable>
+         </transition>
+         <transition guard="(granted&lt;reqd)" id="makeproposal">
+            <name>
+               <text>makeproposal</text>
+            </name>
+            <toolspecific activity="makeproposal" localNodeID="d4a179f1-fe86-497a-81cd-bfb8ce086817"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <writeVariable>granted</writeVariable>
+            <readVariable>reqd</readVariable>
+         </transition>
+         <transition guard="(ok&lt;0)" id="skip">
+            <name>
+               <text>skip</text>
+            </name>
+            <toolspecific activity="skip" localNodeID="636ed26d-3dc7-41b9-b7de-7d134ee99d18" tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <readVariable>ok</readVariable>
+         </transition>
+         <transition guard="(granted&lt;reqd)" id="refuseproposal1">
+            <name>
+               <text>refuseproposal1</text>
+            </name>
+            <toolspecific activity="refuseproposal1" localNodeID="13a1df74-194c-44d6-9f0b-1b0f69a9f50e"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <readVariable>reqd</readVariable>
+            <readVariable>granted</readVariable>
+         </transition>
+<!--         <transition guard="(granted&lt;reqd)" id="refuseproposal2">-->
+<!--            <name>-->
+<!--               <text>refuseproposal2</text>-->
+<!--            </name>-->
+<!--            <toolspecific activity="refuseproposal2" localNodeID="ccd22576-2d81-449d-b759-b14a74ccad93"-->
+<!--                          tool="ProM"-->
+<!--                          version="6.4"/>-->
+<!--            <graphics>-->
+<!--               <position x="17.5" y="15.0"/>-->
+<!--               <dimension x="25.0" y="20.0"/>-->
+<!--               <fill color="#FFFFFF"/>-->
+<!--            </graphics>-->
+<!--            <readVariable>reqd</readVariable>-->
+<!--            <readVariable>granted</readVariable>-->
+<!--         </transition>-->
+         <transition guard="(reqd&gt;=0)" id="updaterequest">
+            <name>
+               <text>updaterequest</text>
+            </name>
+            <toolspecific activity="updaterequest" localNodeID="983f1b5a-79d8-40c0-91b5-cfd9f015f4eb"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <writeVariable>reqd</writeVariable>
+<!--            <readVariable>reqd</readVariable>-->
+         </transition>
+         <transition guard="(reqd&gt;0)" id="andsplit">
+            <name>
+               <text>andsplit</text>
+            </name>
+            <toolspecific activity="andsplit" localNodeID="32bd2bdd-0d4f-4bb7-b1f3-571fc5622343"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <readVariable>reqd</readVariable>
+         </transition>
+         <transition guard="(ok&gt;=0)" id="opencreditloan">
+            <name>
+               <text>opencreditloan</text>
+            </name>
+            <toolspecific activity="opencreditloan" localNodeID="830d31df-57cf-420e-91c7-71236d544b69"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <readVariable>ok</readVariable>
+         </transition>
+         <transition guard="(granted&gt;10000)" id="informacceptance">
+            <name>
+               <text>informacceptance</text>
+            </name>
+            <toolspecific activity="informacceptance" localNodeID="bb86b4c7-9894-4edb-8cbf-7190d92da6de"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <readVariable>granted</readVariable>
+         </transition>
+         <transition guard="(ok&lt;0)" id="informrejection">
+            <name>
+               <text>informrejection</text>
+            </name>
+            <toolspecific activity="informrejection" localNodeID="54b89186-d8de-4b0b-bbd7-3106eccbb38f"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <readVariable>ok</readVariable>
+         </transition>
+         <transition guard="(granted&gt;=reqd)" id="andjoin">
+            <name>
+               <text>andjoin</text>
+            </name>
+            <toolspecific activity="andjoin" localNodeID="890a6a7d-fc68-4d28-8bfb-abd177434de7"
+                          tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <readVariable>granted</readVariable>
+            <readVariable>reqd</readVariable>
+         </transition>
+         <arc id="arc26" source="skip" target="p3">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="f399a034-855f-4dd6-9c5b-ebb8030c9202" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc27" source="p7" target="andjoin">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="b81d9a62-fb86-487d-90ca-a15f0929fffc" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc28" source="p3" target="refuseproposal1">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="2cdec0de-e61f-434f-92c0-416c151222e2" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc29" source="informrejection" target="p6">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="f0e821a2-8365-465c-b9e2-914d3324306f" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc30" source="opencreditloan" target="p7">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="e8748820-be5f-4069-a91a-76e502b915c5" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc31" source="updaterequest" target="p1">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="4b0dcc3a-9517-49bd-9f86-86b8d19f268c" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+<!--         <arc id="arc32" source="refuseproposal1" target="p91">-->
+<!--            <name>-->
+<!--               <text>1</text>-->
+<!--            </name>-->
+<!--            <toolspecific localNodeID="62973e22-971e-4376-97ef-336e6656b8da" tool="ProM" version="6.4"/>-->
+<!--            <arctype>-->
+<!--               <text>normal</text>-->
+<!--            </arctype>-->
+<!--         </arc>-->
+         <arc id="arc32" source="refuseproposal1" target="p9">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="62973e22-971e-4376-97ef-336e6656b8da" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc33" source="p3" target="andsplit">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="ccd273ef-920a-4c1e-b863-9dfa94e9e92c" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc34" source="p4" target="informrejection">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="24033ea5-0663-43a2-bc6a-22a37f2369fd" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc35" source="andjoin" target="o">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="98eb4745-252b-4194-bd8e-f4d10d23e8ca" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc36" source="p8" target="makeproposal">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="6d1ef721-b3de-44e9-9211-6c409eefe4c6" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc37" source="creditrequest" target="p1">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="84f957a5-d294-43a9-a9b3-1754e2a90d49" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc38" source="p6" target="andjoin">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="44d57b92-4db3-4fda-9ba4-12916c0c785b" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc39" source="p2" target="skip">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="bb20f058-0dee-4fd5-96b6-c5c0077e7700" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc40" source="p2" target="prepare">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="5a6647e8-d6b2-4b5f-b4ca-c91929d26fa0" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc41" source="makeproposal" target="p3">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="4cfb217e-195d-4c2b-ba32-7d9a5b4d0e49" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc42" source="p9" target="updaterequest">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="0b7a9235-3b66-41af-9009-c5829efd1e6b" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc43" source="p1" target="verify">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="7bf2f528-5cca-47fa-9baa-f75cddde9d20" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc44" source="prepare" target="p8">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="e19f5e7a-817c-4d91-8b6f-f5616ab17b3c" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+<!--         <arc id="arc45" source="p91" target="refuseproposal2">-->
+<!--            <name>-->
+<!--               <text>1</text>-->
+<!--            </name>-->
+<!--            <toolspecific localNodeID="3c5c0caa-cd01-41f3-b09a-be6cfb116814" tool="ProM" version="6.4"/>-->
+<!--            <arctype>-->
+<!--               <text>normal</text>-->
+<!--            </arctype>-->
+<!--         </arc>-->
+         <arc id="arc46" source="andsplit" target="p4">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="fc5c4ca7-e2c3-4d94-8d70-8d98813d1418" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+<!--         <arc id="arc47" source="refuseproposal2" target="p9">-->
+<!--            <name>-->
+<!--               <text>1</text>-->
+<!--            </name>-->
+<!--            <toolspecific localNodeID="a71161d8-a198-4493-92b3-e447029a79bb" tool="ProM" version="6.4"/>-->
+<!--            <arctype>-->
+<!--               <text>normal</text>-->
+<!--            </arctype>-->
+<!--         </arc>-->
+         <arc id="arc47" source="refuseproposal1" target="p9">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="a71161d8-a198-4493-92b3-e447029a79bb" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc48" source="andsplit" target="p5">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="f2bcb6b0-ebe9-4f12-95c9-4e40e013dbed" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc49" source="verify" target="p2">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="d8b9211e-816d-40ab-bbc3-ec8be760f1f8" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc50" source="p4" target="informacceptance">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="9bd2dc25-67d6-4e59-b1b7-28d9351eed8a" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc51" source="p5" target="opencreditloan">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="09699a58-1816-467d-8606-e88b03642987" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc52" source="informacceptance" target="p6">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="0bde9991-1cd3-4c78-b2f4-e01102afad2e" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc53" source="i" target="creditrequest">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="93710661-2d0a-47bd-b036-35cfc3177f58" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+      </page>
+      <initialmarkings>
+         <marking>
+            <place idref="i">
+               <text>1</text>
+            </place>
+            <place idref="p1">
+               <text>0</text>
+            </place>
+            <place idref="p2">
+               <text>0</text>
+            </place>
+            <place idref="p8">
+               <text>0</text>
+            </place>
+            <place idref="p3">
+               <text>0</text>
+            </place>
+            <place idref="p91">
+               <text>0</text>
+            </place>
+            <place idref="p9">
+               <text>0</text>
+            </place>
+            <place idref="p5">
+               <text>0</text>
+            </place>
+            <place idref="p7">
+               <text>0</text>
+            </place>
+            <place idref="p4">
+               <text>0</text>
+            </place>
+            <place idref="p6">
+               <text>0</text>
+            </place>
+            <place idref="o">
+               <text>0</text>
+            </place>
+         </marking>
+      </initialmarkings>
+      <finalmarkings>
+         <marking>
+            <place idref="i">
+               <text>0</text>
+            </place>
+            <place idref="p1">
+               <text>0</text>
+            </place>
+            <place idref="p2">
+               <text>0</text>
+            </place>
+            <place idref="p8">
+               <text>0</text>
+            </place>
+            <place idref="p3">
+               <text>0</text>
+            </place>
+            <place idref="p91">
+               <text>0</text>
+            </place>
+            <place idref="p9">
+               <text>0</text>
+            </place>
+            <place idref="p5">
+               <text>0</text>
+            </place>
+            <place idref="p7">
+               <text>0</text>
+            </place>
+            <place idref="p4">
+               <text>0</text>
+            </place>
+            <place idref="p6">
+               <text>0</text>
+            </place>
+            <place idref="o">
+               <text>1</text>
+            </place>
+         </marking>
+      </finalmarkings>
+      <variables>
+         <variable type="java.lang.Long" initialvalue="0">
+            <name>reqd</name>
+            <position x="0" y="0"/>
+            <dimension height="50" width="50"/>
+         </variable>
+         <variable type="java.lang.Long" initialvalue="0">
+            <name>ok</name>
+            <position x="0" y="0"/>
+            <dimension height="50" width="50"/>
+         </variable>
+         <variable type="java.lang.Long" initialvalue="0">
+            <name>granted</name>
+            <position x="0" y="0"/>
+            <dimension height="50" width="50"/>
+         </variable>
+      </variables>
+   </net>
+</pnml>

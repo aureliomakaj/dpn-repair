@@ -27,9 +27,10 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
     public void repair() {
         priorityQueue.add(new RepairDPN(toRepair));
         RepairDPN net;
-//        int skip = 3;
+        int skip = 0;
         while (true) {
             net = priorityQueue.remove();
+            iterations++;
             setVisited(net.dpn);
             ConstraintGraph cg = new ConstraintGraph(net.dpn);
             Map<Integer, Boolean> soundnessCheck = new HashMap<>();
@@ -38,11 +39,12 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
                 nodeMap = computeNodesCoreachability(toRepair, cg);
                 soundnessCheck = checkSoundness(cg, nodeMap);
                 if (soundnessCheck.values().stream().allMatch(value -> value)) {
-//                    if(skip == 0){
+                    modifiedTransitions = net.modifiedTransitions;
+                    if(skip == 0) {
                         break;
-//                    } else {
-//                        skip -= 1;
-//                    }
+                    } else {
+                        skip--;
+                    }
                 }
             }
             fixDead(net, cg);
@@ -206,9 +208,7 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
                 integerDifferenceConstraintSetMap.put(number, n.getCanonicalForm());
             }
         }
-        for (ConstraintGraph.Node n: cg.getNodes()) {
-            System.out.println("Node "+ n.getId() + " constraint " + findKeyOfConstraint(n.getCanonicalForm()));
-        }
+
         Map<Integer, ConstraintGraph.Node> idNodeMap = cg.getNodes()
                 .stream()
                 .collect(Collectors.toMap(ConstraintGraph.Node::getId, Function.identity()));
@@ -228,7 +228,6 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
         while (!equalMaps(nodeMap, nodeMapPrev)) {
             iterations++;
             nodeMapPrev = new HashMap<>(nodeMap);
-            printIteration(iterations, nodeMapPrev);
             nodeMap = new HashMap<>();
             for (ConstraintGraph.Node node : cg.getNodes()) {
                 nodeMap.put(node, computeCoReach(nodeMapPrev, node, dpn, cg, idNodeMap));
@@ -236,23 +235,6 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
         }
 
         return nodeMap;
-    }
-
-    private void printIteration(int iterations, Map<ConstraintGraph.Node, Set<DifferenceConstraintSet>> nodeMapPrev) {
-        Map<Integer, Integer> idToId = new HashMap<>();
-        idToId.put(1, 1);
-        idToId.put(2, 2);
-        idToId.put(4, 3);
-        idToId.put(3, 4);
-        idToId.put(7, 5);
-        idToId.put(6, 6);
-        System.out.println("************* Iteration " + iterations);
-        for (Map.Entry<ConstraintGraph.Node, Set<DifferenceConstraintSet>> entry: nodeMapPrev.entrySet()) {
-            System.out.println("++++++ Node " + idToId.get(entry.getKey().getId()));
-            for (DifferenceConstraintSet dcs: entry.getValue()) {
-                System.out.println(findKeyOfConstraint(dcs));
-            }
-        }
     }
 
     public Map<Integer, Boolean> checkSoundness(ConstraintGraph cg,

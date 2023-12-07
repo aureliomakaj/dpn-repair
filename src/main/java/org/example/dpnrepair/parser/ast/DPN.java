@@ -1,11 +1,9 @@
 package org.example.dpnrepair.parser.ast;
 
 import org.example.dpnrepair.EdgeType;
+import org.example.dpnrepair.semantics.ConstraintGraph;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DPN implements Cloneable {
@@ -84,6 +82,31 @@ public class DPN implements Cloneable {
         if (variable != null) {
             this.variables.put(variable.getName(), variable);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DPN net = (DPN) o;
+        return net.places.keySet().equals(this.places.keySet()) && this.sameTransitions(net.transitions, this.transitions) && net.arcs.equals(this.arcs);
+    }
+
+    private boolean sameTransitions(Map<String, Transition> first, Map<String, Transition> second) {
+        if(!first.keySet().equals(second.keySet())){
+            return false;
+        }
+        for (Map.Entry<String, Transition> f: first.entrySet()) {
+            if(!second.get(f.getKey()).equals(f.getValue())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(places, transitions, arcs);
     }
 
     @Override

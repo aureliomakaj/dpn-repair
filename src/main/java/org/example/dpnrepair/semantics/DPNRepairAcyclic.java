@@ -1,6 +1,5 @@
 package org.example.dpnrepair.semantics;
 
-import org.example.dpnrepair.ConstraintGraphPrinter;
 import org.example.dpnrepair.DPNUtils;
 import org.example.dpnrepair.parser.ast.Constraint;
 import org.example.dpnrepair.parser.ast.DPN;
@@ -14,8 +13,9 @@ public class DPNRepairAcyclic {
     protected DPN repaired;
     PriorityQueue<RepairDPN> priorityQueue;
     protected int distance = 0;
-
-    protected final Set<Set<String>> visitedDpn = new HashSet<>();
+    protected final Set<DPN> visitedDpn = new HashSet<>();
+    protected Set<String> modifiedTransitions;
+    protected int iterations = 0;
 
 
     public DPNRepairAcyclic(DPN dpn) {
@@ -29,14 +29,19 @@ public class DPNRepairAcyclic {
     public void repair() {
         priorityQueue.add(new RepairDPN(toRepair));
         RepairDPN net;
+        int skip = 0;
         while (true) {
             net = priorityQueue.remove();
+            iterations++;
             setVisited(net.dpn);
             ConstraintGraph cg = new ConstraintGraph(net.dpn);
-//            ConstraintGraphPrinter cgPrinter = new ConstraintGraphPrinter(cg);
-//            cgPrinter.writeRaw("ex-tesi.txt");
             if (cg.isDataAwareSound()) {
-                break;
+                modifiedTransitions = net.modifiedTransitions;
+                if (skip == 0) {
+                    break;
+                } else {
+                    skip--;
+                }
             }
             fixDead(net, cg);
             fixMissing(net, cg);
@@ -45,13 +50,33 @@ public class DPNRepairAcyclic {
         this.distance = net.modifiedTransitions.size();
     }
 
+    public PriorityQueue<RepairDPN> getPriorityQueue() {
+        return priorityQueue;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public Set<DPN> getVisitedDpn() {
+        return visitedDpn;
+    }
+
+    public Set<String> getModifiedTransitions() {
+        return modifiedTransitions;
+    }
+
+    public int getIterations() {
+        return iterations;
+    }
+
     /**
      * In our algorithm, the only thing that can change between different DPNs
      * are the guards of transitions, thus we base on that to see if a dpn
      * has already been visited
      */
     protected void setVisited(DPN dpn) {
-        visitedDpn.add(getDPNKey(dpn));
+        visitedDpn.add(dpn);
     }
 
     protected Set<String> getDPNKey(DPN dpn) {
@@ -64,9 +89,10 @@ public class DPNRepairAcyclic {
     }
 
     protected void updatePriorityQueue(RepairDPN net) {
-        if (!visitedDpn.contains(getDPNKey(net.dpn))) {
-//            net.visited = true;
-            priorityQueue.add(net);
+        if (!visitedDpn.contains(net.dpn)) {
+//            if(priorityQueue.size() < 1000) {
+                priorityQueue.add(net);
+//            }
         }
     }
 
@@ -210,5 +236,12 @@ public class DPNRepairAcyclic {
             this.dpn = dpn;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            RepairDPN net = (RepairDPN) o;
+            return net.dpn.equals(this.dpn);
+        }
     }
 }

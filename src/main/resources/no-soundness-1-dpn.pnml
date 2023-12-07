@@ -2,7 +2,7 @@
 <pnml>
    <net id="net1" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
       <name>
-         <text>Figure 4</text>
+         <text>New version of Unlabeled net</text>
       </name>
       <page id="n0">
          <name>
@@ -12,7 +12,7 @@
             <name>
                <text>p1</text>
             </name>
-            <toolspecific localNodeID="284a07b7-e5a1-4139-9e60-db2b4babbe05" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="555d7429-3200-4059-aa78-b238013c28f1" tool="ProM" version="6.4"/>
             <graphics>
                <position x="11.25" y="11.25"/>
                <dimension x="12.5" y="12.5"/>
@@ -22,17 +22,27 @@
             <name>
                <text>p2</text>
             </name>
-            <toolspecific localNodeID="301a72df-1e99-485f-8860-b39f0ccba331" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="97fa7741-f3ce-4406-8dda-6dc013d0648c" tool="ProM" version="6.4"/>
             <graphics>
                <position x="11.25" y="11.25"/>
                <dimension x="12.5" y="12.5"/>
             </graphics>
          </place>
-         <transition guard="(a&gt;=b)" id="t1">
+         <place id="p3">
+            <name>
+               <text>p3</text>
+            </name>
+            <toolspecific localNodeID="acf327b8-e900-4796-98fd-f72d3973df94" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <transition guard="(a&gt;=10)" id="t1">
             <name>
                <text>t1</text>
             </name>
-            <toolspecific activity="t1" localNodeID="9f0c4930-fb12-4b6f-941f-c1814c1b7825" tool="ProM"
+            <toolspecific activity="t1" localNodeID="1b53462c-a895-4a71-8278-a4b06cc33506" tool="ProM"
                           version="6.4"/>
             <graphics>
                <position x="17.5" y="15.0"/>
@@ -40,54 +50,52 @@
                <fill color="#FFFFFF"/>
             </graphics>
             <writeVariable>a</writeVariable>
-            <readVariable>b</readVariable>
          </transition>
-         <transition guard="(a - b &lt;= 0)" id="t2">
+         <transition guard="(a&lt;=5)" id="t2">
             <name>
                <text>t2</text>
             </name>
-            <toolspecific activity="t2" localNodeID="ea280d84-78b9-4a8f-b13a-502626c3fa9c" tool="ProM"
+            <toolspecific activity="t2" localNodeID="001815a6-a536-4643-b0ad-a6f4afdd9e7a" tool="ProM"
                           version="6.4"/>
             <graphics>
                <position x="17.5" y="15.0"/>
                <dimension x="25.0" y="20.0"/>
                <fill color="#FFFFFF"/>
             </graphics>
-            <writeVariable>b</writeVariable>
             <readVariable>a</readVariable>
          </transition>
-         <arc id="arc5" source="p1" target="t1">
+         <arc id="arc6" source="p1" target="t1">
             <name>
                <text>1</text>
             </name>
-            <toolspecific localNodeID="8e52fc44-a12a-40da-aefb-e465125bc03b" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="d592b77a-e83e-467c-a108-f297b87e01bf" tool="ProM" version="6.4"/>
             <arctype>
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc6" source="t2" target="p1">
+         <arc id="arc7" source="t1" target="p2">
             <name>
                <text>1</text>
             </name>
-            <toolspecific localNodeID="ee305f01-8431-4b69-a81c-24fd0d5f676c" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="77fa0b31-0755-4688-a42b-3f2f897353fd" tool="ProM" version="6.4"/>
             <arctype>
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc7" source="p2" target="t2">
+         <arc id="arc8" source="t2" target="p3">
             <name>
                <text>1</text>
             </name>
-            <toolspecific localNodeID="4b7b6d0a-3a16-4146-aa00-0f092e6a7399" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="f156b45c-7c8e-4121-985d-a5d38434013f" tool="ProM" version="6.4"/>
             <arctype>
                <text>normal</text>
             </arctype>
          </arc>
-         <arc id="arc8" source="t1" target="p2">
+         <arc id="arc9" source="p2" target="t2">
             <name>
                <text>1</text>
             </name>
-            <toolspecific localNodeID="814f0894-ab38-4901-92fd-50d8c15515af" tool="ProM" version="6.4"/>
+            <toolspecific localNodeID="6282e02f-5e7e-42da-a87c-7e4dd43461c7" tool="ProM" version="6.4"/>
             <arctype>
                <text>normal</text>
             </arctype>
@@ -101,6 +109,9 @@
             <place idref="p2">
                <text>0</text>
             </place>
+            <place idref="p3">
+               <text>0</text>
+            </place>
          </marking>
       </initialmarkings>
       <finalmarkings>
@@ -109,18 +120,16 @@
                <text>0</text>
             </place>
             <place idref="p2">
+               <text>0</text>
+            </place>
+            <place idref="p3">
                <text>1</text>
             </place>
          </marking>
       </finalmarkings>
       <variables>
-         <variable type="java.lang.Long" initialValue="0">
-            <name><text>a</text></name>
-            <position x="0" y="0"/>
-            <dimension height="50" width="50"/>
-         </variable>
-         <variable type="java.lang.Long" initialValue="0">
-            <name><text>b</text></name>
+         <variable minValue="0" initialValue="0" type="java.lang.Long">
+            <name>a</name>
             <position x="0" y="0"/>
             <dimension height="50" width="50"/>
          </variable>
