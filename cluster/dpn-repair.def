@@ -1,0 +1,25 @@
+Bootstrap: docker
+From: ubuntu:20.04
+
+%post
+
+    # Preconfigure tzdata
+    echo 'export TZ=Europe/Rome'                                           >> /environment
+    export TZ=Europe/Rome
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
+    echo $TZ > /etc/timezone
+
+    # Downloads the latest upgrades and package lists (important).
+    apt-get update -y && apt-get -y upgrade
+    apt-get install -y software-properties-common
+
+    # Java 11
+    apt-get install -y openjdk-11-jre-headless openjdk-11-jdk-headless
+    
+    # Reduce the size of the image by deleting the package lists we downloaded,
+    # which are useless now.
+    rm -rf /var/lib/apt/lists/*
+
+# https://nextjournal.com/sdanisch/GLMakie-nogpu 
+# to run GLMakie on headless server
+# xvfb-run -s '-screen 0 1024x768x24' julia ....

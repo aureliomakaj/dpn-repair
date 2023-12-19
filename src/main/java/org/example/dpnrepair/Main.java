@@ -19,7 +19,7 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, DPNParserException, TransformerException, InvalidConfigurationException, InvalidConfigurationException {
-        String figure = "src/main/resources/package-handling-half-dpn.pnml";
+        String figure = args[0];
         DPNParser parser = new DPNParser(figure);
         parser.parse();
         ConstraintGraph cg = new ConstraintGraph(parser.getDpn());
