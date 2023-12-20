@@ -90,9 +90,9 @@ public class DPNRepairAcyclic {
 
     protected void updatePriorityQueue(RepairDPN net) {
         if (!visitedDpn.contains(net.dpn)) {
-//            if(priorityQueue.size() < 1000) {
+            if(priorityQueue.size() < 1000) {
                 priorityQueue.add(net);
-//            }
+            }
         }
     }
 
