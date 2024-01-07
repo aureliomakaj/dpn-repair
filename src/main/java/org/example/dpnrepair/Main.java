@@ -4,32 +4,63 @@ import org.example.dpnrepair.parser.DPNParser;
 import org.example.dpnrepair.exceptions.DPNParserException;
 
 import org.example.dpnrepair.parser.ast.*;
-import org.example.dpnrepair.semantics.ConstraintGraph;
-import org.example.dpnrepair.semantics.DPNRepairAcyclic;
-import org.example.dpnrepair.semantics.DPNRepairCyclic;
-import org.example.dpnrepair.semantics.DifferenceConstraintSet;
+import org.example.dpnrepair.semantics.*;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
-import java.util.*;
 
 
 public class Main {
-    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, DPNParserException, TransformerException, InvalidConfigurationException, InvalidConfigurationException {
-        String figure = args[0];
-        DPNParser parser = new DPNParser(figure);
+    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, DPNParserException, TransformerException, InvalidConfigurationException {
+        String filePath = null;
+        boolean cyclic = false;
+        // Check if there are arguments passed
+        if (args.length > 0) {
+            // Loop through the arguments to find the "--filename" parameter and its value
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].equals("--file-path")) {
+                    filePath = args[i + 1];
+                }
+                if (args[i].equals("--cyclic")) {
+                    cyclic = true;
+                }
+            }
+        } else {
+            System.out.println("No command-line arguments provided.");
+        }
+
+        if (filePath == null) {
+            System.out.println("No model specified");
+            return;
+        }
+
+        DPNParser parser = new DPNParser(filePath);
         parser.parse();
+
         ConstraintGraph cg = new ConstraintGraph(parser.getDpn());
+
+        ConstraintGraphPrinter cgp = new ConstraintGraphPrinter(filePath, cg);
+        cgp.writeRaw();
+
         long startTime = System.nanoTime();
-//        DPNRepairAcyclic repair = new DPNRepairAcyclic(parser.getDpn());
-        DPNRepairCyclic repair = new DPNRepairCyclic(parser.getDpn(), SmtSolverFactory.getSmtSolver());
+        DPNRepair repair;
+        if (!cyclic) {
+            repair = new DPNRepairAcyclic(parser.getDpn());
+        } else {
+            repair = new DPNRepairCyclic(parser.getDpn(), SmtSolverFactory.getSmtSolver());
+        }
         repair.repair();
         long endTime = System.nanoTime();
         long durationInNano = endTime - startTime;
         double durationInSeconds = (double) durationInNano / 1_000_000_000.0;
+        ConstraintGraph cg2 = new ConstraintGraph(repair.getRepaired());
+
+        ConstraintGraphPrinter cgp2 = new ConstraintGraphPrinter(filePath, cg2, true);
+        cgp2.writeRaw();
+        cgp2.writeToXML();
 
         System.out.println("Finished with the following details:");
         System.out.println("- Distance: " + repair.getDistance());
