@@ -19,13 +19,22 @@ import java.util.stream.Collectors;
 
 public class ConstraintGraphPrinter {
     private static final String ID = "id";
-    private ConstraintGraph cg;
+    private final ConstraintGraph cg;
+    private final String path;
+    private boolean repaired = false;
 
-    public ConstraintGraphPrinter(ConstraintGraph cg) {
+    public ConstraintGraphPrinter(String path, ConstraintGraph cg) {
         this.cg = cg;
+        this.path = path;
     }
 
-    public void writeToXML(String filename, boolean withCanonicalForm) throws ParserConfigurationException, IOException, TransformerException {
+    public ConstraintGraphPrinter(String path, ConstraintGraph cg, boolean repaired) {
+        this.cg = cg;
+        this.path = path;
+        this.repaired = repaired;
+    }
+
+    public void writeToXML() throws ParserConfigurationException, TransformerException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
@@ -66,13 +75,6 @@ public class ConstraintGraphPrinter {
             subElement.setAttribute("key", "node_key");
             subElement.setTextContent(nodePlaceStr.get(node.getId()));
             nodeElement.appendChild(subElement);
-//            if(withCanonicalForm){
-//                String content = node.getMarking().getPlaceTokenMap().entrySet().stream().filter(e -> e.getValue() != 0).map(Map.Entry::getKey).collect(Collectors.joining(", "));
-//                for (Constraint c: node.getCanonicalForm().getConstraintSet()) {
-//                    content = content.concat("\n").concat(c.toString());
-//                }
-//                nodeElement.setTextContent(content);
-//            }
             graph.appendChild(nodeElement);
         }
 
@@ -89,8 +91,11 @@ public class ConstraintGraphPrinter {
             graph.appendChild(edgeElement);
         }
 
-
-        try (FileOutputStream output = new FileOutputStream(filename.concat(".graphml"))) {
+        File originalFile = new File(path);
+        String parentDirectory = originalFile.getParent();
+        String repaired = this.repaired ? "-repaired" : "";
+        File newFile = new File(parentDirectory, originalFile.getName() + repaired + "-cg.graphml");
+        try (FileOutputStream output = new FileOutputStream(newFile)) {
             writeXml(doc, output);
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,11 +118,10 @@ public class ConstraintGraphPrinter {
 
     /**
      * Just write the nodes (marking + constraint graph) in a file
-     * @param filename
      */
-    public void writeRaw(String filename) {
+    public void writeRaw() {
         String separator = "------------------------\n";
-        List<ConstraintGraph.Node> nodeList = cg.getNodes().stream().collect(Collectors.toList());
+        List<ConstraintGraph.Node> nodeList = new ArrayList<>(cg.getNodes());
         nodeList.sort(Comparator.comparingInt(ConstraintGraph.Node::getId));
 
         StringBuilder content = new StringBuilder("************* CONSTRAINT GRAPH ***************** \n \n \n");
@@ -136,7 +140,11 @@ public class ConstraintGraphPrinter {
             content.append(separator);
             content.append("\n\n\n");
         }
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+        File originalFile = new File(path);
+        String parentDirectory = originalFile.getParent();
+        String repaired = this.repaired ? "-repaired" : "";
+        File newFile = new File(parentDirectory, originalFile.getName() + repaired + "-cg-raw.txt");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile))) {
             writer.write(content.toString());
             writer.close();
             System.out.println("Content written to the file successfully.");
