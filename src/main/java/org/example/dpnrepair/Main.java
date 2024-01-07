@@ -17,6 +17,7 @@ public class Main {
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, DPNParserException, TransformerException, InvalidConfigurationException {
         String filePath = null;
         boolean cyclic = false;
+        boolean writeOutputFiles = true;
         // Check if there are arguments passed
         if (args.length > 0) {
             // Loop through the arguments to find the "--filename" parameter and its value
@@ -27,6 +28,10 @@ public class Main {
                 if (args[i].equals("--cyclic")) {
                     cyclic = true;
                 }
+                if (args[i].equals("--no-output-files")) {
+                    writeOutputFiles = false;
+                }
+
             }
         } else {
             System.out.println("No command-line arguments provided.");
@@ -42,8 +47,10 @@ public class Main {
 
         ConstraintGraph cg = new ConstraintGraph(parser.getDpn());
 
-        ConstraintGraphPrinter cgp = new ConstraintGraphPrinter(filePath, cg);
-        cgp.writeRaw();
+        if (writeOutputFiles) {
+            ConstraintGraphPrinter cgp = new ConstraintGraphPrinter(filePath, cg);
+            cgp.writeRaw();
+        }
 
         long startTime = System.nanoTime();
         DPNRepair repair;
@@ -58,9 +65,11 @@ public class Main {
         double durationInSeconds = (double) durationInNano / 1_000_000_000.0;
         ConstraintGraph cg2 = new ConstraintGraph(repair.getRepaired());
 
-        ConstraintGraphPrinter cgp2 = new ConstraintGraphPrinter(filePath, cg2, true);
-        cgp2.writeRaw();
-        cgp2.writeToXML();
+        if (writeOutputFiles) {
+            ConstraintGraphPrinter cgp2 = new ConstraintGraphPrinter(filePath, cg2, true);
+            cgp2.writeRaw();
+            cgp2.writeToXML();
+        }
 
         System.out.println("Finished with the following details:");
         System.out.println("- Distance: " + repair.getDistance());
