@@ -8,7 +8,7 @@ import org.example.dpnrepair.parser.ast.Transition;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DPNRepairAcyclic {
+public class DPNRepairAcyclic implements DPNRepair {
     protected final DPN toRepair;
     protected DPN repaired;
     PriorityQueue<RepairDPN> priorityQueue;
@@ -89,7 +89,7 @@ public class DPNRepairAcyclic {
     }
 
     protected void updatePriorityQueue(RepairDPN net) {
-        if (!visitedDpn.contains(net.dpn)) {
+        if (!visitedDpn.contains(net.dpn) && !priorityQueue.contains(net)) {
 //            if(priorityQueue.size() < 1000) {
                 priorityQueue.add(net);
 //            }
@@ -234,6 +234,11 @@ public class DPNRepairAcyclic {
 
         public RepairDPN(DPN dpn) {
             this.dpn = dpn;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(dpn);
         }
 
         @Override
