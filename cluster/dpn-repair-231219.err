@@ -1,0 +1,24 @@
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.AbstractQueue.remove(AbstractQueue.java:117)
+	at org.example.dpnrepair.semantics.DPNRepairCyclic.repair(DPNRepairCyclic.java:32)
+	at org.example.dpnrepair.Main.main(Main.java:29)
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.AbstractQueue.remove(AbstractQueue.java:117)
+	at org.example.dpnrepair.semantics.DPNRepairCyclic.repair(DPNRepairCyclic.java:32)
+	at org.example.dpnrepair.Main.main(Main.java:29)
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.AbstractQueue.remove(AbstractQueue.java:117)
+	at org.example.dpnrepair.semantics.DPNRepairCyclic.repair(DPNRepairCyclic.java:32)
+	at org.example.dpnrepair.Main.main(Main.java:29)
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.AbstractQueue.remove(AbstractQueue.java:117)
+	at org.example.dpnrepair.semantics.DPNRepairCyclic.repair(DPNRepairCyclic.java:32)
+	at org.example.dpnrepair.Main.main(Main.java:29)
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.AbstractQueue.remove(AbstractQueue.java:117)
+	at org.example.dpnrepair.semantics.DPNRepairCyclic.repair(DPNRepairCyclic.java:32)
+	at org.example.dpnrepair.Main.main(Main.java:29)
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.AbstractQueue.remove(AbstractQueue.java:117)
+	at org.example.dpnrepair.semantics.DPNRepairCyclic.repair(DPNRepairCyclic.java:32)
+	at org.example.dpnrepair.Main.main(Main.java:29)

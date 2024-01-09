@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pnml>
+   <net id="net1" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
+      <name>
+         <text>Figure 4</text>
+      </name>
+      <page id="n0">
+         <name>
+            <text/>
+         </name>
+         <place id="p1">
+            <name>
+               <text>p1</text>
+            </name>
+            <toolspecific localNodeID="284a07b7-e5a1-4139-9e60-db2b4babbe05" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <place id="p2">
+            <name>
+               <text>p2</text>
+            </name>
+            <toolspecific localNodeID="301a72df-1e99-485f-8860-b39f0ccba331" tool="ProM" version="6.4"/>
+            <graphics>
+               <position x="11.25" y="11.25"/>
+               <dimension x="12.5" y="12.5"/>
+            </graphics>
+         </place>
+         <transition guard="(a&gt;=b)" id="t1">
+            <name>
+               <text>t1</text>
+            </name>
+            <toolspecific activity="t1" localNodeID="9f0c4930-fb12-4b6f-941f-c1814c1b7825" tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <writeVariable>a</writeVariable>
+            <readVariable>b</readVariable>
+         </transition>
+         <transition guard="(a - b &lt;= 0)" id="t2">
+            <name>
+               <text>t2</text>
+            </name>
+            <toolspecific activity="t2" localNodeID="ea280d84-78b9-4a8f-b13a-502626c3fa9c" tool="ProM"
+                          version="6.4"/>
+            <graphics>
+               <position x="17.5" y="15.0"/>
+               <dimension x="25.0" y="20.0"/>
+               <fill color="#FFFFFF"/>
+            </graphics>
+            <writeVariable>b</writeVariable>
+            <readVariable>a</readVariable>
+         </transition>
+         <arc id="arc5" source="p1" target="t1">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="8e52fc44-a12a-40da-aefb-e465125bc03b" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc6" source="t2" target="p1">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="ee305f01-8431-4b69-a81c-24fd0d5f676c" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc7" source="p2" target="t2">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="4b7b6d0a-3a16-4146-aa00-0f092e6a7399" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+         <arc id="arc8" source="t1" target="p2">
+            <name>
+               <text>1</text>
+            </name>
+            <toolspecific localNodeID="814f0894-ab38-4901-92fd-50d8c15515af" tool="ProM" version="6.4"/>
+            <arctype>
+               <text>normal</text>
+            </arctype>
+         </arc>
+      </page>
+      <initialmarkings>
+         <marking>
+            <place idref="p1">
+               <text>1</text>
+            </place>
+            <place idref="p2">
+               <text>0</text>
+            </place>
+         </marking>
+      </initialmarkings>
+      <finalmarkings>
+         <marking>
+            <place idref="p1">
+               <text>0</text>
+            </place>
+            <place idref="p2">
+               <text>1</text>
+            </place>
+         </marking>
+      </finalmarkings>
+      <variables>
+         <variable type="java.lang.Long" initialValue="0">
+            <name><text>a</text></name>
+            <position x="0" y="0"/>
+            <dimension height="50" width="50"/>
+         </variable>
+         <variable type="java.lang.Long" initialValue="0">
+            <name><text>b</text></name>
+            <position x="0" y="0"/>
+            <dimension height="50" width="50"/>
+         </variable>
+      </variables>
+   </net>
+</pnml>
