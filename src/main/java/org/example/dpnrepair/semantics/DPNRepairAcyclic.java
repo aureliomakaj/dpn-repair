@@ -20,7 +20,8 @@ public class DPNRepairAcyclic implements DPNRepair {
 
     public DPNRepairAcyclic(DPN dpn) {
         this.toRepair = dpn;
-        priorityQueue = new PriorityQueue<>(Comparator.comparingInt(o -> o.modifiedTransitions.size()));
+//        priorityQueue = new PriorityQueue<>(Comparator.comparingInt(o -> o.modifiedTransitions.size()));
+        priorityQueue = new PriorityQueue<RepairDPN>();
     }
 
     public DPN getRepaired() {
@@ -227,7 +228,7 @@ public class DPNRepairAcyclic implements DPNRepair {
         updatePriorityQueue(copy);
     }
 
-    static class RepairDPN {
+    static class RepairDPN implements Comparable<RepairDPN> {
         DPN dpn;
         int changes = 0;
         Set<String> modifiedTransitions = new HashSet<>();
@@ -248,5 +249,11 @@ public class DPNRepairAcyclic implements DPNRepair {
             RepairDPN net = (RepairDPN) o;
             return net.dpn.equals(this.dpn);
         }
+        
+        @Override
+        public int compareTo(RepairDPN anotherDPN) {
+            return this.changes - anotherDPN.changes;
+        }
     }
+
 }

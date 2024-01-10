@@ -30,6 +30,8 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
         int skip = 0;
         while (true) {
             net = priorityQueue.remove();
+            // System.out.println(net.changes);
+            // System.out.println(net.modifiedTransitions.toString());
             iterations++;
             setVisited(net.dpn);
             ConstraintGraph cg = new ConstraintGraph(net.dpn);
