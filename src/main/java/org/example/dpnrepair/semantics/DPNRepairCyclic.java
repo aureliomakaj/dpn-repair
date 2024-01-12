@@ -116,8 +116,8 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
             // Increase changes only if there is a difference between guard and guardUnderlyingNet
             if (guard.isStrict() != guardUnderlyingNet.isStrict() || guard.getValue() != guardUnderlyingNet.getValue()) {
                 firstCopy.modifiedTransitions.add(t.getId());
-                firstCopy.changes++;
             }
+            firstCopy.changes = firstCopy.modifiedTransitions.size();
             updatePriorityQueue(firstCopy);
         } else {
             guard = t.getGuard();
@@ -127,8 +127,8 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
             Transition t2 = firstCopy.dpn.getTransitions().get(t.getId());
             t2.setGuard(guardUnderlyingNet.clone());
             firstCopy.modifiedTransitions.add(t.getId());
-            firstCopy.changes++;
             // UpdateQ(N′′)
+            firstCopy.changes = firstCopy.modifiedTransitions.size();
             updatePriorityQueue(firstCopy);
 
             // Let N′′ be a new copy of N′
@@ -140,8 +140,8 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
             // guard′′(t) := Z − x op′ k′
             t3.setGuard(guardUnderlyingNet.clone());
             secondCopy.modifiedTransitions.add(t.getId());
-            secondCopy.changes++;
             // UpdateQ(N′′)
+            secondCopy.changes = secondCopy.modifiedTransitions.size();
             updatePriorityQueue(secondCopy);
         }
     }
@@ -155,13 +155,14 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
         // y − x op′ k′ in C
         Constraint guardUnderlyingNet = getConstraintFromDifferenceConstraintSet(guard.getSecond(), guard.getFirst(), c);
         // if y − x op′ k′ in C is such that k′ = 0 or y is Z or x is Z then
-        if ((guardUnderlyingNet.getValue() == 0) || guard.getFirst().equals(Constraint.ZED) || guard.getSecond().equals(Constraint.ZED)) {
+        if ((guardUnderlyingNet.getValue() != Long.MAX_VALUE) && ((guardUnderlyingNet.getValue() == 0) || guard.getFirst().equals(Constraint.ZED) || guard.getSecond().equals(Constraint.ZED))) {
             Constraint guardCopy = guard.clone();
+            guardCopy.setValue(guardUnderlyingNet.getNegatedValue()); // Negate value
             guardCopy.setStrict(!guardUnderlyingNet.isStrict()); // Switch strictness
             Transition t2 = firstCopy.dpn.getTransitions().get(t.getId());
             t2.setGuard(guardCopy);
             firstCopy.modifiedTransitions.add(t.getId());
-            firstCopy.changes++;
+            firstCopy.changes = firstCopy.modifiedTransitions.size();
             updatePriorityQueue(firstCopy);
         } else {
             // y − Z op′ k′ in C
@@ -175,7 +176,7 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
                 Transition t2 = firstCopy.dpn.getTransitions().get(t.getId());
                 t2.setGuard(guardCopy);
                 firstCopy.modifiedTransitions.add(t.getId());
-                firstCopy.changes++;
+                firstCopy.changes = firstCopy.modifiedTransitions.size();
                 updatePriorityQueue(firstCopy);
             }
 
@@ -192,7 +193,7 @@ public class DPNRepairCyclic extends DPNRepairAcyclic {
                 Transition t2 = secondCopy.dpn.getTransitions().get(t.getId());
                 t2.setGuard(guardCopy);
                 secondCopy.modifiedTransitions.add(t.getId());
-                secondCopy.changes++;
+                secondCopy.changes = secondCopy.modifiedTransitions.size();
                 updatePriorityQueue(secondCopy);
             }
         }

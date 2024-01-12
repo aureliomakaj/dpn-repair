@@ -1,0 +1,137 @@
+Running acyclic/exp-growth-2-dpn.pnml ...
+Content written to the file successfully.
+Content written to the file successfully.
+Finished with the following details:
+- Distance: 4
+- Execution time: 0.063638887 seconds
+- Iterations: 17
+- Priority queue size: 0
+- Visited DPNs: 16
+*** Modified guards:
+Guard [n18] from (s - Z < 20) to (s - Z <= 9223372036854775807)
+Guard [n17] from (s - Z < 10) to (s - Z <= 9223372036854775807)
+Guard [n19] from (s - Z < 30) to (s - Z <= 9223372036854775807)
+Guard [n20] from (s - Z < 40) to (s - Z <= 9223372036854775807)
+
+Running acyclic/exp-growth-3-dpn.pnml ...
+Content written to the file successfully.
+Content written to the file successfully.
+Finished with the following details:
+- Distance: 8
+- Execution time: 0.448841661 seconds
+- Iterations: 257
+- Priority queue size: 0
+- Visited DPNs: 256
+*** Modified guards:
+Guard [n36] from (s - Z < 40) to (s - Z <= 9223372036854775807)
+Guard [n35] from (s - Z < 30) to (s - Z <= 9223372036854775807)
+Guard [n38] from (s - Z < 60) to (s - Z <= 9223372036854775807)
+Guard [n37] from (s - Z < 50) to (s - Z <= 9223372036854775807)
+Guard [n39] from (s - Z < 70) to (s - Z <= 9223372036854775807)
+Guard [n40] from (s - Z < 80) to (s - Z <= 9223372036854775807)
+Guard [n34] from (s - Z < 20) to (s - Z <= 9223372036854775807)
+Guard [n33] from (s - Z < 10) to (s - Z <= 9223372036854775807)
+
+Running acyclic/exp-growth-4-dpn.pnml ...
+Content written to the file successfully.
+Content written to the file successfully.
+Finished with the following details:
+- Distance: 16
+- Execution time: 182.741185024 seconds
+- Iterations: 65537
+- Priority queue size: 0
+- Visited DPNs: 65536
+*** Modified guards:
+Guard [n70] from (s - Z < 60) to (s - Z <= 9223372036854775807)
+Guard [n80] from (s - Z < 160) to (s - Z <= 9223372036854775807)
+Guard [n72] from (s - Z < 80) to (s - Z <= 9223372036854775807)
+Guard [n71] from (s - Z < 70) to (s - Z <= 9223372036854775807)
+Guard [n74] from (s - Z < 100) to (s - Z <= 9223372036854775807)
+Guard [n73] from (s - Z < 90) to (s - Z <= 9223372036854775807)
+Guard [n76] from (s - Z < 120) to (s - Z <= 9223372036854775807)
+Guard [n65] from (s - Z < 10) to (s - Z <= 9223372036854775807)
+Guard [n75] from (s - Z < 110) to (s - Z <= 9223372036854775807)
+Guard [n67] from (s - Z < 30) to (s - Z <= 9223372036854775807)
+Guard [n78] from (s - Z < 140) to (s - Z <= 9223372036854775807)
+Guard [n66] from (s - Z < 20) to (s - Z <= 9223372036854775807)
+Guard [n77] from (s - Z < 130) to (s - Z <= 9223372036854775807)
+Guard [n69] from (s - Z < 50) to (s - Z <= 9223372036854775807)
+Guard [n79] from (s - Z < 150) to (s - Z <= 9223372036854775807)
+Guard [n68] from (s - Z < 40) to (s - Z <= 9223372036854775807)
+
+Running acyclic/figure-2-dpn.pnml ...
+Content written to the file successfully.
+Content written to the file successfully.
+Finished with the following details:
+- Distance: 2
+- Execution time: 0.057357653 seconds
+- Iterations: 25
+- Priority queue size: 19
+- Visited DPNs: 43
+*** Modified guards:
+Guard [t5] from (a - Z < 5) to (a - Z < 10)
+Guard [t2] from (Z - a < -15) to (Z - a <= -10)
+
+Running acyclic/figure-3-dpn.pnml ...
+Content written to the file successfully.
+Content written to the file successfully.
+Finished with the following details:
+- Distance: 1
+- Execution time: 0.013069602 seconds
+- Iterations: 3
+- Priority queue size: 3
+- Visited DPNs: 5
+*** Modified guards:
+Guard [t1] from (Z - a <= -5) to (Z - a <= 9223372036854775807)
+
+Running acyclic/figure1-dpn.pnml ...
+Content written to the file successfully.
+Content written to the file successfully.
+Finished with the following details:
+- Distance: 2
+- Execution time: 0.047211742 seconds
+- Iterations: 18
+- Priority queue size: 34
+- Visited DPNs: 51
+*** Modified guards:
+Guard [t4] from (b - a < 0) to (b - a < 5)
+Guard [t2] from (Z - a < -10) to (Z - a <= -10)
+
+Running acyclic/package-handling-dpn.pnml ...
+Content written to the file successfully.
+Content written to the file successfully.
+Finished with the following details:
+- Distance: 1
+- Execution time: 179.812276465 seconds
+- Iterations: 2
+- Priority queue size: 8
+- Visited DPNs: 9
+*** Modified guards:
+Guard [n30] from (Z - pt < -40) to (Z - pt < 0)
+
+Running cyclic/credit_load_dpn.pnml ...
+Content written to the file successfully.
+Content written to the file successfully.
+Finished with the following details:
+- Distance: 4
+- Execution time: 57.935046035 seconds
+- Iterations: 17212
+- Priority queue size: 125571
+- Visited DPNs: 142783
+*** Modified guards:
+Guard [refuseproposal1] from (granted - reqd < 0) to (granted - Z <= 9223372036854775807)
+Guard [opencreditloan] from (Z - ok <= 0) to (Z - ok <= 9223372036854775807)
+Guard [andjoin] from (reqd - granted <= 0) to (Z - granted <= 9223372036854775807)
+Guard [informacceptance] from (Z - granted < -10000) to (Z - granted <= 9223372036854775807)
+
+Running cyclic/evil-graph-dpn.pnml ...
+Content written to the file successfully.
+Content written to the file successfully.
+Finished with the following details:
+- Distance: 1
+- Execution time: 0.405836752 seconds
+- Iterations: 2
+- Priority queue size: 11
+- Visited DPNs: 13
+*** Modified guards:
+Guard [t2] from (x - y < 0) to (x - Z <= 9223372036854775807)

@@ -1,0 +1,821 @@
+************* CONSTRAINT GRAPH ***************** 
+ 
+ 
+------------------------
+NodeId 1
+Marking i
+------------------------
+Z - ok <= 0
+Z - granted <= 0
+ok - reqd <= 0
+reqd - Z <= 0
+granted - Z <= 0
+reqd - ok <= 0
+reqd - granted <= 0
+granted - ok <= 0
+ok - Z <= 0
+Z - reqd <= 0
+ok - granted <= 0
+granted - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 2
+Marking p1
+------------------------
+Z - granted <= 0
+Z - ok <= 0
+granted - Z <= 0
+Z - reqd < 0
+granted - ok <= 0
+ok - Z <= 0
+ok - reqd < 0
+ok - granted <= 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 3
+Marking p2
+------------------------
+Z - granted <= 0
+granted - Z <= 0
+Z - reqd < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 4
+Marking p8
+------------------------
+Z - ok <= 0
+Z - granted <= 0
+granted - Z <= 0
+Z - reqd < 0
+granted - ok <= 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 5
+Marking p2
+------------------------
+Z - granted <= 0
+ok - granted < 0
+granted - Z <= 0
+Z - reqd < 0
+ok - reqd < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 6
+Marking p3
+------------------------
+Z - granted <= 0
+ok - granted < 0
+granted - Z <= 0
+Z - reqd < 0
+ok - reqd < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 7
+Marking p2
+------------------------
+Z - ok <= 0
+Z - granted <= 0
+granted - Z <= 0
+Z - reqd < 0
+granted - ok <= 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 8
+Marking p3
+------------------------
+Z - ok <= 0
+Z - reqd < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 11
+Marking p9
+------------------------
+Z - granted <= 0
+ok - granted < 0
+granted - Z <= 0
+Z - reqd < 0
+ok - reqd < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 12
+Marking p4, p5
+------------------------
+Z - granted <= 0
+ok - granted < 0
+granted - Z <= 0
+Z - reqd < 0
+ok - reqd < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 15
+Marking p9
+------------------------
+Z - ok <= 0
+Z - reqd < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 16
+Marking p4, p5
+------------------------
+Z - ok <= 0
+Z - reqd < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 17
+Marking p1
+------------------------
+Z - granted <= 0
+ok - granted < 0
+granted - Z <= 0
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+granted - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 20
+Marking p5, p6
+------------------------
+Z - granted <= 0
+ok - granted < 0
+granted - Z <= 0
+Z - reqd < 0
+ok - reqd < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 21
+Marking p1
+------------------------
+Z - ok <= 0
+Z - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 22
+Marking p4, p7
+------------------------
+Z - ok <= 0
+Z - reqd < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 23
+Marking p5, p6
+------------------------
+Z - ok <= 0
+Z - reqd < -10000
+Z - granted < -10000
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 24
+Marking p4, p5
+------------------------
+granted - ok <= 10000
+Z - ok <= 0
+Z - reqd < 0
+granted - Z <= 10000
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 26
+Marking p2
+------------------------
+Z - granted <= 0
+granted - Z <= 0
+Z - reqd <= 0
+granted - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 28
+Marking p2
+------------------------
+Z - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 29
+Marking p6, p7
+------------------------
+Z - ok <= 0
+Z - reqd < -10000
+Z - granted < -10000
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 30
+Marking p4, p7
+------------------------
+granted - ok <= 10000
+Z - ok <= 0
+Z - reqd < 0
+granted - Z <= 10000
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 36
+Marking p8
+------------------------
+Z - ok <= 0
+Z - granted <= 0
+granted - Z <= 0
+granted - ok <= 0
+Z - reqd <= 0
+granted - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 37
+Marking p2
+------------------------
+Z - granted <= 0
+ok - granted < 0
+granted - Z <= 0
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+granted - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 38
+Marking p3
+------------------------
+Z - granted <= 0
+ok - granted < 0
+granted - Z <= 0
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+granted - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 39
+Marking p2
+------------------------
+Z - ok <= 0
+Z - granted <= 0
+granted - Z <= 0
+granted - ok <= 0
+Z - reqd <= 0
+granted - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 40
+Marking p8
+------------------------
+Z - ok <= 0
+Z - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 41
+Marking p2
+------------------------
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+------------------------
+
+
+
+------------------------
+NodeId 42
+Marking p3
+------------------------
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+------------------------
+
+
+
+------------------------
+NodeId 43
+Marking p2
+------------------------
+Z - ok <= 0
+Z - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 47
+Marking p3
+------------------------
+Z - ok <= 0
+Z - reqd <= 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 51
+Marking p3
+------------------------
+Z - granted <= 0
+ok - granted < 0
+reqd - Z <= 0
+granted - Z <= 0
+reqd - granted <= 0
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+granted - reqd <= 0
+------------------------
+
+
+
+------------------------
+NodeId 59
+Marking p9
+------------------------
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 60
+Marking p3
+------------------------
+Z - granted <= 0
+ok - granted < 0
+reqd - granted <= 0
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+------------------------
+
+
+
+------------------------
+NodeId 61
+Marking p4, p5
+------------------------
+Z - reqd < 0
+ok - reqd < 0
+ok - Z < 0
+------------------------
+
+
+
+------------------------
+NodeId 62
+Marking p3
+------------------------
+reqd - Z <= 0
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+------------------------
+
+
+
+------------------------
+NodeId 65
+Marking p9
+------------------------
+Z - ok <= 0
+Z - reqd <= 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 67
+Marking p3
+------------------------
+Z - ok <= 0
+reqd - Z <= 0
+granted - ok < 0
+reqd - ok <= 0
+Z - reqd <= 0
+granted - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 70
+Marking p1
+------------------------
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+------------------------
+
+
+
+------------------------
+NodeId 72
+Marking p4, p5
+------------------------
+ok - granted < 0
+Z - reqd < 0
+reqd - granted <= 0
+Z - granted < 0
+ok - reqd < 0
+ok - Z < 0
+------------------------
+
+
+
+------------------------
+NodeId 73
+Marking p3
+------------------------
+Z - granted <= 0
+ok - granted < 0
+reqd - Z <= 0
+reqd - granted <= 0
+Z - reqd <= 0
+ok - reqd < 0
+ok - Z < 0
+------------------------
+
+
+
+------------------------
+NodeId 75
+Marking p5, p6
+------------------------
+Z - reqd < 0
+ok - granted < -10000
+ok - reqd < 0
+ok - Z < 0
+Z - granted < -10000
+------------------------
+
+
+
+------------------------
+NodeId 76
+Marking p4, p5
+------------------------
+granted - reqd < 10000
+Z - reqd < 0
+ok - reqd < 0
+ok - Z < 0
+granted - Z <= 10000
+------------------------
+
+
+
+------------------------
+NodeId 77
+Marking p5, p6
+------------------------
+Z - reqd < 0
+ok - reqd < 0
+ok - Z < 0
+------------------------
+
+
+
+------------------------
+NodeId 78
+Marking p9
+------------------------
+reqd - Z <= 0
+Z - reqd <= 0
+ok - reqd < 0
+granted - Z < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 82
+Marking p9
+------------------------
+Z - ok <= 0
+reqd - Z <= 0
+granted - ok < 0
+reqd - ok <= 0
+Z - reqd <= 0
+granted - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 86
+Marking p5, p6
+------------------------
+Z - reqd < 0
+reqd - granted <= 0
+ok - granted < -10000
+ok - reqd < 0
+ok - Z < 0
+Z - granted < -10000
+------------------------
+
+
+
+------------------------
+NodeId 87
+Marking p4, p5
+------------------------
+ok - granted < 0
+granted - reqd < 10000
+Z - reqd < 0
+reqd - granted <= 0
+Z - granted < 0
+ok - reqd < 0
+ok - Z < 0
+reqd - Z <= 10000
+granted - Z <= 10000
+------------------------
+
+
+
+------------------------
+NodeId 88
+Marking p5, p6
+------------------------
+ok - granted < 0
+Z - reqd < 0
+reqd - granted <= 0
+Z - granted < 0
+ok - reqd < 0
+ok - Z < 0
+------------------------
+
+
+
+------------------------
+NodeId 94
+Marking p5, p6
+------------------------
+granted - reqd < 10000
+Z - reqd < 0
+ok - reqd < 0
+ok - Z < 0
+granted - Z <= 10000
+------------------------
+
+
+
+------------------------
+NodeId 96
+Marking p1
+------------------------
+Z - reqd <= 0
+ok - reqd < 0
+granted - Z < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 97
+Marking p1
+------------------------
+Z - ok <= 0
+granted - ok < 0
+Z - reqd <= 0
+granted - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 101
+Marking p5, p6
+------------------------
+ok - granted < 0
+granted - reqd < 10000
+Z - reqd < 0
+reqd - granted <= 0
+Z - granted < 0
+ok - reqd < 0
+ok - Z < 0
+reqd - Z <= 10000
+granted - Z <= 10000
+------------------------
+
+
+
+------------------------
+NodeId 104
+Marking p2
+------------------------
+Z - reqd <= 0
+granted - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 107
+Marking p8
+------------------------
+Z - ok <= 0
+granted - ok < 0
+Z - reqd <= 0
+granted - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 108
+Marking p2
+------------------------
+Z - reqd <= 0
+ok - reqd < 0
+granted - Z < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 109
+Marking p3
+------------------------
+Z - reqd <= 0
+ok - reqd < 0
+granted - Z < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 110
+Marking p2
+------------------------
+Z - ok <= 0
+granted - ok < 0
+Z - reqd <= 0
+granted - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 114
+Marking p9
+------------------------
+Z - reqd <= 0
+ok - reqd < 0
+granted - Z < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 115
+Marking p4, p5
+------------------------
+Z - reqd < 0
+ok - reqd < 0
+granted - Z < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 116
+Marking p3
+------------------------
+reqd - Z <= 0
+Z - reqd <= 0
+ok - reqd < 0
+granted - Z < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+
+------------------------
+NodeId 122
+Marking p5, p6
+------------------------
+Z - reqd < 0
+ok - reqd < 0
+granted - Z < 0
+ok - Z < 0
+granted - reqd < 0
+------------------------
+
+
+

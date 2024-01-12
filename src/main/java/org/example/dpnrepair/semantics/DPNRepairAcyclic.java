@@ -34,7 +34,6 @@ public class DPNRepairAcyclic implements DPNRepair {
         while (true) {
             net = priorityQueue.remove();
             iterations++;
-            setVisited(net.dpn);
             ConstraintGraph cg = new ConstraintGraph(net.dpn);
             if (cg.isDataAwareSound()) {
                 modifiedTransitions = net.modifiedTransitions;
@@ -90,8 +89,15 @@ public class DPNRepairAcyclic implements DPNRepair {
     }
 
     protected void updatePriorityQueue(RepairDPN net) {
-        if (!visitedDpn.contains(net.dpn) && !priorityQueue.contains(net)) {
+        if (!visitedDpn.contains(net.dpn)) {
 //            if(priorityQueue.size() < 1000) {
+//                 System.out.print(net.changes + " " + net.modifiedTransitions.toString());
+//                 for (String guard : net.modifiedTransitions) {
+//                     Transition modified = net.dpn.getTransitions().get(guard);
+//                     System.out.print(" Guard [" + guard + "] " + modified.getGuard());
+//                 }
+//                 System.out.println(); 
+                setVisited(net.dpn);
                 priorityQueue.add(net);
 //            }
         }
@@ -129,7 +135,7 @@ public class DPNRepairAcyclic implements DPNRepair {
         // guard′′(t) := y − x op′ k′
         t2.setGuard(guardUnderlyingNet.clone());
         copy.modifiedTransitions.add(t.getId());
-        copy.changes++;
+        copy.changes = copy.modifiedTransitions.size();
         // UpdateQ(N′′)
         updatePriorityQueue(copy);
     }
@@ -167,7 +173,7 @@ public class DPNRepairAcyclic implements DPNRepair {
             Transition t2 = copy.dpn.getTransitions().get(t.getId());
             t2.setGuard(guardCopy);
             copy.modifiedTransitions.add(t.getId());
-            copy.changes++;
+            copy.changes = copy.modifiedTransitions.size();
             updatePriorityQueue(copy);
         }
     }
@@ -224,7 +230,7 @@ public class DPNRepairAcyclic implements DPNRepair {
         newGuard.setStrict(false);
         t2.setGuard(newGuard);
         copy.modifiedTransitions.add(t.getId());
-        copy.changes++;
+        copy.changes = copy.modifiedTransitions.size();
         updatePriorityQueue(copy);
     }
 
